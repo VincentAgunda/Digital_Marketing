@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import React from "react";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { auth } from "./firebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { useAuth } from "./auth/AuthContext"; // Use authentication context
 
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -44,7 +43,9 @@ const About = () => (
   <motion.div {...pageAnimation}>
     <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-3xl font-bold text-gray-800 mb-4">About Us</h1>
-      <p className="text-gray-600">We are a leading digital marketing agency specializing in growth strategies.</p>
+      <p className="text-gray-600">
+        We are a leading digital marketing agency specializing in growth strategies.
+      </p>
     </div>
   </motion.div>
 );
@@ -53,7 +54,9 @@ const Services = () => (
   <motion.div {...pageAnimation}>
     <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-3xl font-bold text-gray-800 mb-4">Our Services</h1>
-      <p className="text-gray-600">We provide SEO, social media marketing, and PPC management.</p>
+      <p className="text-gray-600">
+        We provide SEO, social media marketing, and PPC management.
+      </p>
     </div>
   </motion.div>
 );
@@ -68,8 +71,12 @@ const Portfolio = () => (
 );
 
 // Protected Route for Admin Access
-const ProtectedRoute = ({ user, children }) => {
-  if (!user || user.email !== "admin@loreinedigital.com") {
+const ProtectedRoute = ({ children }) => {
+  const { currentUser } = useAuth();
+
+  console.log("Authenticated User:", currentUser); // Debugging log
+
+  if (!currentUser || currentUser.email !== "admin@loreinedigital.com") {
     return <Navigate to="/login" />;
   }
   return children;
@@ -88,27 +95,16 @@ const LoadingScreen = () => (
 );
 
 function App() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const location = useLocation(); // Track page changes
+  const { currentUser, loading } = useAuth();
+  const location = useLocation();
 
-  // Track Authentication State
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setLoading(false); // Stop loading once authentication check is done
-    });
-    return () => unsubscribe();
-  }, []);
-
-  // Show loading while checking authentication
   if (loading) {
     return <LoadingScreen />;
   }
 
   return (
     <>
-      <Header user={user} />
+      <Header user={currentUser} />
       <AnimatePresence mode="wait">
         <Routes key={location.pathname} location={location}>
           {/* Public Routes */}
@@ -130,7 +126,7 @@ function App() {
           <Route
             path="/admin-dashboard"
             element={
-              <ProtectedRoute user={user}>
+              <ProtectedRoute>
                 <AdminDashboard />
               </ProtectedRoute>
             }

@@ -31,7 +31,7 @@ function Header({ user }) {
       <nav className="max-w-6xl mx-auto px-4 flex justify-between items-center">
         {/* Logo */}
         <div className="text-xl font-bold text-gray-800">
-          <Link to="/">YOUR LOGO</Link>
+          <Link to="/">LOGO</Link>
         </div>
 
         {/* Desktop Navigation */}

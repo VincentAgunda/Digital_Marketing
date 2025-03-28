@@ -1,53 +1,152 @@
-import React from 'react';
-import { FaPhone, FaEnvelope, FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram } from 'react-icons/fa';
+import React, { useState } from "react";
+import emailjs from "@emailjs/browser";
+import {
+  FaPhone,
+  FaEnvelope,
+  FaFacebookF,
+  FaTwitter,
+  FaLinkedinIn,
+  FaInstagram,
+} from "react-icons/fa";
 
 function Footer() {
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+
+  const sendEmail = async (e) => {
+    e.preventDefault();
+
+    const serviceId = process.env.REACT_APP_EMAILJS_SERVICE_ID;
+    const templateId = process.env.REACT_APP_EMAILJS_TEMPLATE_ID;
+    const publicKey = process.env.REACT_APP_EMAILJS_PUBLIC_KEY;
+
+    if (!email) {
+      setMessage("Please enter an email address.");
+      return;
+    }
+
+    const templateParams = {
+      user_email: email,
+    };
+
+    try {
+      await emailjs.send(serviceId, templateId, templateParams, publicKey);
+      setMessage("Subscribed successfully!");
+      setEmail("");
+    } catch (error) {
+      console.error("Email sending error:", error);
+      setMessage("Subscription failed. Please try again.");
+    }
+  };
+
   return (
-    <footer className="bg-gray-800 text-white py-16">
-      <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        <div>
-          <h3 className="text-lg font-bold mb-4">YOUR LOGO</h3>
-          <p className="text-gray-400 mb-4">123 Main Street, Anytown, USA 12345</p>
-          <p className="text-gray-400">&copy; 2023 Your Company. All rights reserved.</p>
-        </div>
-        <div>
-          <h3 className="text-lg font-bold mb-4">Navigation</h3>
-          <ul className="text-gray-400">
-            <li className="mb-2"><a href="#" className="hover:text-pink-500">Home</a></li>
-            <li className="mb-2"><a href="#" className="hover:text-pink-500">About</a></li>
-            <li className="mb-2"><a href="#" className="hover:text-pink-500">Services</a></li>
-            <li className="mb-2"><a href="#" className="hover:text-pink-500">Portfolio</a></li>
-            <li className="mb-2"><a href="#" className="hover:text-pink-500">Contact</a></li>
-          </ul>
-        </div>
-        <div>
-          <h3 className="text-lg font-bold mb-4">Contact Us</h3>
-          <p className="text-gray-400 mb-2 flex items-center"><FaPhone className="mr-2" /> +1 (555) 123-4567</p>
-          <p className="text-gray-400 flex items-center"><FaEnvelope className="mr-2" /> info@yourcompany.com</p>
-        </div>
-        <div>
-          <h3 className="text-lg font-bold mb-4">Newsletter</h3>
-          <p className="text-gray-400 mb-2">Subscribe to our newsletter for the latest updates.</p>
-          <div className="flex">
-            <input
-              type="email"
-              placeholder="Your Email"
-              className="bg-gray-700 text-white border border-gray-600 rounded-l-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-pink-500"
-            />
-            <button className="bg-pink-500 hover:bg-pink-600 text-white rounded-r-md py-2 px-4 font-bold">
-              Subscribe
-            </button>
+    <footer className="bg-gray-900 text-white pt-8 pb-4">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+          
+          {/* Address Section */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold hover:text-pink-500 transition-colors duration-200 cursor-default">
+              ADDRESS
+            </h3>
+            <p className="text-gray-400 text-xs hover:text-white transition-colors duration-200">
+              123 Main Street<br />
+              Anytown, Nairobi
+            </p>
           </div>
-          <div className="mt-4 flex space-x-4">
-            <a href="#" className="text-gray-400 hover:text-pink-500"><FaFacebookF className="text-xl" /></a>
-            <a href="#" className="text-gray-400 hover:text-pink-500"><FaTwitter className="text-xl" /></a>
-            <a href="#" className="text-gray-400 hover:text-pink-500"><FaLinkedinIn className="text-xl" /></a>
-            <a href="#" className="text-gray-400 hover:text-pink-500"><FaInstagram className="text-xl" /></a>
+
+          {/* Navigation Section */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold hover:text-pink-500 transition-colors duration-200 cursor-default">
+              NAVIGATION
+            </h3>
+            <ul className="space-y-1.5">
+              {['Home', 'About', 'Services', 'Portfolio', 'Contact'].map((item) => (
+                <li key={item}>
+                  <a 
+                    href="#" 
+                    className="text-gray-400 text-xs hover:text-pink-500 transition-colors duration-200 flex items-center"
+                  >
+                    <span className="w-1 h-1 bg-pink-500 rounded-full mr-1.5"></span>
+                    {item}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact Section */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold hover:text-pink-500 transition-colors duration-200 cursor-default">
+              CONTACT US
+            </h3>
+            <div className="space-y-1.5">
+              <p className="text-gray-400 text-xs flex items-center hover:text-white transition-colors duration-200">
+                <FaPhone className="mr-1.5 text-xs" />
+                +254 (555) 123-4567
+              </p>
+              <p className="text-gray-400 text-xs flex items-center hover:text-white transition-colors duration-200">
+                <FaEnvelope className="mr-1.5 text-xs" />
+                info@loreinedigital.com
+              </p>
+            </div>
+          </div>
+
+          {/* Newsletter Section */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold hover:text-pink-500 transition-colors duration-200 cursor-default">
+              NEWSLETTER
+            </h3>
+            <p className="text-gray-400 text-xs hover:text-white transition-colors duration-200">
+              Get the latest updates
+            </p>
+            <form onSubmit={sendEmail} className="space-y-1.5">
+              <div className="flex">
+                <input
+                  type="email"
+                  placeholder="Your Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="flex-1 text-xs px-2.5 py-1.5 rounded-l bg-gray-800 text-white focus:outline-none focus:ring-1 focus:ring-pink-500"
+                  required
+                />
+                <button
+                  type="submit"
+                  className="px-2.5 py-1.5 text-xs bg-pink-600 hover:bg-pink-700 text-white rounded-r transition-colors duration-200"
+                >
+                  Subscribe
+                </button>
+              </div>
+              {message && (
+                <p className={`text-2xs ${message.includes('success') ? 'text-green-400' : 'text-pink-400'}`}>
+                  {message}
+                </p>
+              )}
+            </form>
+            <div className="flex space-x-3 pt-1">
+              {[
+                { icon: <FaFacebookF className="text-xs" />, label: "Facebook" },
+                { icon: <FaTwitter className="text-xs" />, label: "Twitter" },
+                { icon: <FaLinkedinIn className="text-xs" />, label: "LinkedIn" },
+                { icon: <FaInstagram className="text-xs" />, label: "Instagram" },
+              ].map((social, index) => (
+                <a
+                  key={index}
+                  href="#"
+                  className="text-gray-400 hover:text-pink-500 transition-colors duration-200"
+                  aria-label={social.label}
+                >
+                  {social.icon}
+                </a>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-      <div className="max-w-6xl mx-auto px-4 mt-8 text-center text-gray-500">
-        &copy; 2025 Your Company. All rights reserved.
+
+        {/* Copyright Section */}
+        <div className="mt-6 pt-4 border-t border-gray-800 text-center text-gray-400 text-2xs">
+          &copy; {new Date().getFullYear()} LoreineDigital. All rights reserved.
+        </div>
       </div>
     </footer>
   );

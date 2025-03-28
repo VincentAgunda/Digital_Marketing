@@ -18,7 +18,7 @@ const AdminDashboard = () => {
     e.preventDefault();
 
     try {
-      let imageUrl = "/default-blog.jpg"; // Default image from public folder
+      let imageUrl = "/default-blog.jpg"; // Default image
 
       if (image) {
         const storageRef = ref(storage, `blogImages/${image.name}`);
@@ -28,12 +28,11 @@ const AdminDashboard = () => {
 
       await addDoc(collection(db, "blogs"), {
         title,
-        content, // Rich text formatted content
+        content,
         imageUrl,
-        createdAt: serverTimestamp(),
+        createdAt: serverTimestamp(), // Ensures correct timestamp storage
       });
 
-      // Clear form
       setTitle("");
       setContent("");
       setImage(null);
@@ -58,12 +57,7 @@ const AdminDashboard = () => {
         />
 
         {/* Rich Text Editor */}
-        <ReactQuill
-          theme="snow"
-          value={content}
-          onChange={setContent}
-          className="mb-3"
-        />
+        <ReactQuill theme="snow" value={content} onChange={setContent} className="mb-3" />
 
         <input type="file" onChange={handleImageChange} className="mb-3" />
         <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">

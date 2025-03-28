@@ -1,63 +1,84 @@
-import React from 'react';
+import React from "react";
 
-function Testimonials() {
+const Testimonials = () => {
   return (
-    <section className="py-16 bg-gray-50">
-      <div className="max-w-6xl mx-auto px-4 text-center">
-        <h2 className="text-3xl font-bold text-gray-800 mb-4">What Our Customers Say</h2>
-        <p className="text-gray-600 mb-12">
-          Quis ipsum gravida. Accumsan lacus vel facilisis. Dolor magna eget est lorem dolor sed.
-          Nullam non nisi est sit amet.
-        </p>
-        <div className="relative bg-white rounded-lg shadow-md py-12 px-8">
-          {/* World map background (you might need to implement this with an image or more complex CSS) */}
-          <div className="absolute top-0 left-0 w-full h-full bg-gray-100 opacity-50 rounded-lg">
-            {/* Replace with your world map image or SVG */}
-            <img src="placeholder-world-map.png" alt="World Map" className="w-full h-full object-cover rounded-lg" />
+    <section className="relative py-10 bg-gray-50 overflow-hidden" style={{ minHeight: '400px' }}>
+      {/* Full-cover map background */}
+      <div className="absolute inset-0 z-0">
+        <img 
+          src="world-map4.png" 
+          alt="World Map" 
+          className="w-full h-full object-cover opacity-20"
+        />
+      </div>
+
+      {/* Content container */}
+      <div className="relative z-10 max-w-4xl mx-auto px-4 md:px-6 text-center h-full flex flex-col justify-center">
+        {/* Section Header */}
+        <div className="mb-6 md:mb-8">
+          <p className="text-pink-500 font-semibold mb-1 md:mb-2 text-sm md:text-base">Testimonial</p>
+          <h2 className="text-xl md:text-3xl font-bold text-gray-800 mb-2 md:mb-4">
+            What Our Customers Say
+          </h2>
+          <p className="text-gray-600 max-w-md mx-auto text-xs md:text-sm">
+            Quis ipsum gravida. Accurman locus vel facilisis dolore magna aliqua locus dolor sit
+            amet, consectetur adipiscing elitd do.
+          </p>
+        </div>
+
+        {/* Testimonial Content */}
+        <div className="relative h-48 md:h-64">
+          {/* Central Testimonial */}
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-xs md:max-w-md px-4">
+            <div className="bg-white p-3 md:p-5 rounded-lg shadow-md">
+              <p className="text-gray-700 italic text-xs md:text-sm mb-2 md:mb-3 leading-tight">
+                "Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean. A small river named Duden flows by their place and supplies it with"
+              </p>
+              <div className="flex justify-center">
+                <img 
+                  src="seo.png" 
+                  alt="Customer" 
+                  className="w-8 h-8 md:w-12 md:h-12 rounded-full border border-white shadow-md -mb-5 md:-mb-7"
+                />
+              </div>
+            </div>
           </div>
-          <div className="relative z-10 flex justify-center items-center flex-col">
-            {/* Central Testimonial */}
-            <img
-              src="placeholder-customer-central.png"
-              alt="Keya Akter"
-              className="w-24 h-24 rounded-full object-cover mb-4 shadow-md"
-            />
-            <p className="italic text-gray-700 mb-2 text-lg">
-              Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.
-              A small river named Duden flows by their place and supplies it with
-            </p>
-            <h4 className="font-semibold text-gray-800 mb-1">Keya Akter</h4>
-            <p className="text-gray-500 text-sm">Customer</p>
-          </div>
-          {/* Surrounding Customer Avatars - Adjust positioning as needed */}
-          <div className="absolute top-1/4 left-1/4 transform -translate-x-1/2 -translate-y-1/2">
-            <img src="placeholder-customer1.png" alt="Customer 1" className="w-12 h-12 rounded-full object-cover shadow-md" />
-          </div>
-          <div className="absolute top-1/4 right-1/4 transform translate-x-1/2 -translate-y-1/2">
-            <img src="placeholder-customer2.png" alt="Customer 2" className="w-12 h-12 rounded-full object-cover shadow-md" />
-          </div>
-          <div className="absolute top-1/2 left-1/8 transform -translate-x-1/2">
-            <img src="placeholder-customer3.png" alt="Customer 3" className="w-12 h-12 rounded-full object-cover shadow-md" />
-          </div>
-          <div className="absolute top-1/2 right-1/8 transform translate-x-1/2">
-            <img src="placeholder-customer4.png" alt="Customer 4" className="w-12 h-12 rounded-full object-cover shadow-md" />
-          </div>
-          <div className="absolute bottom-1/4 left-1/4 transform -translate-x-1/2 translate-y-1/2">
-            <img src="placeholder-customer5.png" alt="Customer 5" className="w-12 h-12 rounded-full object-cover shadow-md" />
-          </div>
-          <div className="absolute bottom-1/4 right-1/4 transform translate-x-1/2 translate-y-1/2">
-            <img src="placeholder-customer6.png" alt="Customer 6" className="w-12 h-12 rounded-full object-cover shadow-md" />
-          </div>
-          <div className="absolute top-1/8 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <img src="placeholder-customer7.png" alt="Customer 7" className="w-12 h-12 rounded-full object-cover shadow-md" />
-          </div>
-          <div className="absolute bottom-1/8 left-1/2 transform -translate-x-1/2 translate-y-1/2">
-            <img src="placeholder-customer8.png" alt="Customer 8" className="w-12 h-12 rounded-full object-cover shadow-md" />
-          </div>
+
+          {/* Floating Customer Images - Compact Positions */}
+          <img 
+            src="seo.png" 
+            alt="Customer" 
+            className="absolute top-3 left-3 md:top-8 md:left-12 w-6 h-6 md:w-10 md:h-10 rounded-full border border-white shadow"
+          />
+          <img 
+            src="seo.png" 
+            alt="Customer" 
+            className="absolute top-3 right-3 md:top-8 md:right-12 w-6 h-6 md:w-10 md:h-10 rounded-full border border-white shadow"
+          />
+          <img 
+            src="seo.png" 
+            alt="Customer" 
+            className="absolute top-1/2 left-1 md:left-6 transform -translate-y-1/2 w-6 h-6 md:w-10 md:h-10 rounded-full border border-white shadow"
+          />
+          <img 
+            src="seo.png" 
+            alt="Customer" 
+            className="absolute top-1/2 right-1 md:right-6 transform -translate-y-1/2 w-6 h-6 md:w-10 md:h-10 rounded-full border border-white shadow"
+          />
+          <img 
+            src="seo.png" 
+            alt="Customer" 
+            className="absolute bottom-3 left-3 md:bottom-8 md:left-12 w-6 h-6 md:w-10 md:h-10 rounded-full border border-white shadow"
+          />
+          <img 
+            src="seo.png" 
+            alt="Customer" 
+            className="absolute bottom-3 right-3 md:bottom-8 md:right-12 w-6 h-6 md:w-10 md:h-10 rounded-full border border-white shadow"
+          />
         </div>
       </div>
     </section>
   );
-}
+};
 
 export default Testimonials;
