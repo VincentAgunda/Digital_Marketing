@@ -47,7 +47,7 @@ function HeroSection() {
   return (
     <section
       className="py-16 md:py-36 relative overflow-hidden bg-cover bg-center"
-      style={{ backgroundImage: "url('background3.png')" }}
+      style={{ backgroundImage: "url('background3.webp')" }}
     >
       {/* Overlay */}
       <div className="absolute inset-0 bg-black bg-opacity-30"></div>
@@ -68,13 +68,15 @@ function HeroSection() {
           </button>
         </div>
 
-        <div className="relative w-full max-w-xs md:max-w-sm lg:max-w-md">
+        {/* REMOVED THE SECOND IMAGE */}
+        {/* <div className="relative w-full max-w-xs md:max-w-sm lg:max-w-md">
           <img
-            src="placeholder-hero.png"
+            src="background3.webp"
             alt="Digital marketing illustration"
             className="rounded-lg shadow-xl w-full"
+            loading="lazy"
           />
-        </div>
+        </div> */}
       </div>
 
       {/* MODAL with Smooth Exit Animation */}

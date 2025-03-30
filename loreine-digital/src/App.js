@@ -1,10 +1,13 @@
 import React from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAuth } from "./auth/AuthContext"; // Use authentication context
+import { useAuth } from "./auth/AuthContext";
+import SharedLayout from "./components/SharedLayout";
 
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import ScrollToTop from "./components/ScrollToTop";
+
 import Blogs from "./components/Blogs";
 import BlogPostFuture from "./components/BlogPostFuture";
 import BlogPostSEO from "./components/BlogPostSEO";
@@ -13,68 +16,22 @@ import BlogDetails from "./components/BlogDetails";
 import Login from "./auth/Login";
 import Register from "./auth/Register";
 import AdminDashboard from "./admin/AdminDashboard";
+import Payment from "./components/Payment";
 
-import HeroSection from "./components/HeroSection";
-import WhatWeOffer from "./components/WhatWeOffer";
-import BuzzSection from "./components/BuzzSection";
-import Testimonials from "./components/Testimonials";
-import LatestNews from "./components/LatestNews";
+import About from "./pages/About";
+import Services from "./pages/Services";
+import Portfolio from "./pages/Portfolio";
+import Home from "./pages/Home";
 
-// Page Transition Animation
 const pageAnimation = {
-  initial: { opacity: 0, y: 10 },
+  initial: { opacity: 0, y: 30 },
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -10 },
-  transition: { duration: 0.4, ease: "easeInOut" },
+  exit: { opacity: 0, y: -30 },
+  transition: { duration: 0.3, ease: "easeOut" },
 };
 
-// Pages as Components
-const Home = () => (
-  <motion.div {...pageAnimation}>
-    <HeroSection />
-    <WhatWeOffer />
-    <BuzzSection />
-    <Testimonials />
-    <LatestNews />
-  </motion.div>
-);
-
-const About = () => (
-  <motion.div {...pageAnimation}>
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-3xl font-bold text-gray-800 mb-4">About Us</h1>
-      <p className="text-gray-600">
-        We are a leading digital marketing agency specializing in growth strategies.
-      </p>
-    </div>
-  </motion.div>
-);
-
-const Services = () => (
-  <motion.div {...pageAnimation}>
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-3xl font-bold text-gray-800 mb-4">Our Services</h1>
-      <p className="text-gray-600">
-        We provide SEO, social media marketing, and PPC management.
-      </p>
-    </div>
-  </motion.div>
-);
-
-const Portfolio = () => (
-  <motion.div {...pageAnimation}>
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-3xl font-bold text-gray-800 mb-4">Portfolio</h1>
-      <p className="text-gray-600">Check out our recent projects and case studies.</p>
-    </div>
-  </motion.div>
-);
-
-// Protected Route for Admin Access
 const ProtectedRoute = ({ children }) => {
   const { currentUser } = useAuth();
-
-  console.log("Authenticated User:", currentUser); // Debugging log
 
   if (!currentUser || currentUser.email !== "admin@loreinedigital.com") {
     return <Navigate to="/login" />;
@@ -82,7 +39,6 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-// Loading Component
 const LoadingScreen = () => (
   <motion.div
     className="flex justify-center items-center h-screen text-xl"
@@ -104,35 +60,89 @@ function App() {
 
   return (
     <>
+      <ScrollToTop />
       <Header user={currentUser} />
-      <AnimatePresence mode="wait">
-        <Routes key={location.pathname} location={location}>
-          {/* Public Routes */}
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/portfolio" element={<Portfolio />} />
-          <Route path="/blogs" element={<Blogs />} />
-          <Route path="/blog/future-of-digital-marketing" element={<BlogPostFuture />} />
-          <Route path="/blog/mastering-seo" element={<BlogPostSEO />} />
-          <Route path="/blog/social-media-engagement" element={<BlogPostSocial />} />
-          <Route path="/blog/:id" element={<BlogDetails />} />
 
-          {/* Authentication Routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          {/* Routes with SharedLayout */}
+          <Route element={<SharedLayout />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/services" element={
+              <motion.div {...pageAnimation}>
+                <Services />
+              </motion.div>
+            } />
+            <Route path="/portfolio" element={
+              <motion.div {...pageAnimation}>
+                <Portfolio />
+              </motion.div>
+            } />
+            <Route path="/blogs" element={
+              <motion.div {...pageAnimation}>
+                <Blogs />
+              </motion.div>
+            } />
+          </Route>
+
+          {/* Regular Routes */}
+          <Route path="/" element={
+            <motion.div {...pageAnimation}>
+              <Home />
+            </motion.div>
+          } />
+
+          <Route path="/about" element={
+            <motion.div {...pageAnimation}>
+              <About />
+            </motion.div>
+          } />
+
+          <Route path="/blog/future-of-digital-marketing" element={
+            <motion.div {...pageAnimation}>
+              <BlogPostFuture />
+            </motion.div>
+          } />
+
+          <Route path="/blog/mastering-seo" element={
+            <motion.div {...pageAnimation}>
+              <BlogPostSEO />
+            </motion.div>
+          } />
+
+          <Route path="/blog/social-media-engagement" element={
+            <motion.div {...pageAnimation}>
+              <BlogPostSocial />
+            </motion.div>
+          } />
+
+          <Route path="/blog/:id" element={
+            <motion.div {...pageAnimation}>
+              <BlogDetails />
+            </motion.div>
+          } />
+
+          <Route path="/payment/:blogId" element={
+            <motion.div {...pageAnimation}>
+              <Payment />
+            </motion.div>
+          } />
 
           {/* Protected Admin Route */}
           <Route
             path="/admin-dashboard"
             element={
               <ProtectedRoute>
-                <AdminDashboard />
+                <motion.div {...pageAnimation}>
+                  <AdminDashboard />
+                </motion.div>
               </ProtectedRoute>
             }
           />
         </Routes>
       </AnimatePresence>
+
       <Footer />
     </>
   );
