@@ -1,150 +1,123 @@
 import React from "react";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAuth } from "./auth/AuthContext";
-import SharedLayout from "./components/SharedLayout";
 
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import ScrollToTop from "./components/ScrollToTop";
-
-import Blogs from "./components/Blogs";
-import BlogPostFuture from "./components/BlogPostFuture";
-import BlogPostSEO from "./components/BlogPostSEO";
-import BlogPostSocial from "./components/BlogPostSocial";
-import BlogDetails from "./components/BlogDetails";
-import Login from "./auth/Login";
-import Register from "./auth/Register";
-import AdminDashboard from "./admin/AdminDashboard";
-import Payment from "./components/Payment";
 
 import About from "./pages/About";
 import Services from "./pages/Services";
 import Portfolio from "./pages/Portfolio";
 import Home from "./pages/Home";
+import Blogs from "./pages/Blogs";
 
-const pageAnimation = {
-  initial: { opacity: 0, y: 30 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -30 },
-  transition: { duration: 0.3, ease: "easeOut" },
-};
-
-const ProtectedRoute = ({ children }) => {
-  const { currentUser } = useAuth();
-
-  if (!currentUser || currentUser.email !== "admin@loreinedigital.com") {
-    return <Navigate to="/login" />;
+const pageVariants = {
+  initial: {
+    opacity: 0.8,
+    scale: 0.98
+  },
+  animate: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.3,
+      ease: "easeInOut"
+    }
+  },
+  exit: {
+    opacity: 0.8,
+    scale: 0.98,
+    transition: {
+      duration: 0.2,
+      ease: "easeInOut"
+    }
   }
-  return children;
 };
-
-const LoadingScreen = () => (
-  <motion.div
-    className="flex justify-center items-center h-screen text-xl"
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    transition={{ duration: 0.5 }}
-  >
-    Loading...
-  </motion.div>
-);
 
 function App() {
-  const { currentUser, loading } = useAuth();
   const location = useLocation();
 
-  if (loading) {
-    return <LoadingScreen />;
-  }
-
   return (
-    <>
-      <ScrollToTop />
-      <Header user={currentUser} />
-
+    <div className="app">
+      <Header />
+      
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
-          {/* Routes with SharedLayout */}
-          <Route element={<SharedLayout />}>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/services" element={
-              <motion.div {...pageAnimation}>
+          <Route
+            path="/"
+            element={
+              <motion.div
+                variants={pageVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="page-content"
+              >
+                <Home />
+              </motion.div>
+            }
+          />
+          <Route
+            path="/about"
+            element={
+              <motion.div
+                variants={pageVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="page-content"
+              >
+                <About />
+              </motion.div>
+            }
+          />
+          <Route
+            path="/services"
+            element={
+              <motion.div
+                variants={pageVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="page-content"
+              >
                 <Services />
               </motion.div>
-            } />
-            <Route path="/portfolio" element={
-              <motion.div {...pageAnimation}>
+            }
+          />
+          <Route
+            path="/portfolio"
+            element={
+              <motion.div
+                variants={pageVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="page-content"
+              >
                 <Portfolio />
               </motion.div>
-            } />
-            <Route path="/blogs" element={
-              <motion.div {...pageAnimation}>
+            }
+          />
+          <Route
+            path="/blogs"
+            element={
+              <motion.div
+                variants={pageVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="page-content"
+              >
                 <Blogs />
               </motion.div>
-            } />
-          </Route>
-
-          {/* Regular Routes */}
-          <Route path="/" element={
-            <motion.div {...pageAnimation}>
-              <Home />
-            </motion.div>
-          } />
-
-          <Route path="/about" element={
-            <motion.div {...pageAnimation}>
-              <About />
-            </motion.div>
-          } />
-
-          <Route path="/blog/future-of-digital-marketing" element={
-            <motion.div {...pageAnimation}>
-              <BlogPostFuture />
-            </motion.div>
-          } />
-
-          <Route path="/blog/mastering-seo" element={
-            <motion.div {...pageAnimation}>
-              <BlogPostSEO />
-            </motion.div>
-          } />
-
-          <Route path="/blog/social-media-engagement" element={
-            <motion.div {...pageAnimation}>
-              <BlogPostSocial />
-            </motion.div>
-          } />
-
-          <Route path="/blog/:id" element={
-            <motion.div {...pageAnimation}>
-              <BlogDetails />
-            </motion.div>
-          } />
-
-          <Route path="/payment/:blogId" element={
-            <motion.div {...pageAnimation}>
-              <Payment />
-            </motion.div>
-          } />
-
-          {/* Protected Admin Route */}
-          <Route
-            path="/admin-dashboard"
-            element={
-              <ProtectedRoute>
-                <motion.div {...pageAnimation}>
-                  <AdminDashboard />
-                </motion.div>
-              </ProtectedRoute>
             }
           />
         </Routes>
       </AnimatePresence>
 
       <Footer />
-    </>
+    </div>
   );
 }
 

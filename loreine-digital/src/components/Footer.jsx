@@ -40,7 +40,7 @@ function Footer() {
   };
 
   return (
-    <footer className="bg-gray-900 text-white pt-8 pb-4">
+    <footer className="bg-[#F0F0F0] text-gray-800 pt-8 pb-4 font-sf">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
           
@@ -49,7 +49,7 @@ function Footer() {
             <h3 className="text-sm font-semibold hover:text-pink-500 transition-colors duration-200 cursor-default">
               ADDRESS
             </h3>
-            <p className="text-gray-400 text-xs hover:text-white transition-colors duration-200">
+            <p className="text-gray-600 text-xs hover:text-gray-900 transition-colors duration-200">
               123 Main Street<br />
               Anytown, Nairobi
             </p>
@@ -65,7 +65,7 @@ function Footer() {
                 <li key={item}>
                   <a 
                     href="#" 
-                    className="text-gray-400 text-xs hover:text-pink-500 transition-colors duration-200 flex items-center"
+                    className="text-gray-600 text-xs hover:text-pink-500 transition-colors duration-200 flex items-center"
                   >
                     <span className="w-1 h-1 bg-pink-500 rounded-full mr-1.5"></span>
                     {item}
@@ -81,11 +81,11 @@ function Footer() {
               CONTACT US
             </h3>
             <div className="space-y-1.5">
-              <p className="text-gray-400 text-xs flex items-center hover:text-white transition-colors duration-200">
+              <p className="text-gray-600 text-xs flex items-center hover:text-gray-900 transition-colors duration-200">
                 <FaPhone className="mr-1.5 text-xs" />
-                +254 (555) 123-4567
+                +254 (746)-968-441 
               </p>
-              <p className="text-gray-400 text-xs flex items-center hover:text-white transition-colors duration-200">
+              <p className="text-gray-600 text-xs flex items-center hover:text-gray-900 transition-colors duration-200">
                 <FaEnvelope className="mr-1.5 text-xs" />
                 info@loreinedigital.com
               </p>
@@ -97,7 +97,7 @@ function Footer() {
             <h3 className="text-sm font-semibold hover:text-pink-500 transition-colors duration-200 cursor-default">
               NEWSLETTER
             </h3>
-            <p className="text-gray-400 text-xs hover:text-white transition-colors duration-200">
+            <p className="text-gray-600 text-xs hover:text-gray-900 transition-colors duration-200">
               Get the latest updates
             </p>
             <form onSubmit={sendEmail} className="space-y-1.5">
@@ -107,7 +107,7 @@ function Footer() {
                   placeholder="Your Email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="flex-1 text-xs px-2.5 py-1.5 rounded-l bg-gray-800 text-white focus:outline-none focus:ring-1 focus:ring-pink-500"
+                  className="flex-1 text-xs px-2.5 py-1.5 rounded-l bg-white text-gray-800 focus:outline-none focus:ring-1 focus:ring-pink-500 border border-gray-300"
                   required
                 />
                 <button
@@ -118,7 +118,7 @@ function Footer() {
                 </button>
               </div>
               {message && (
-                <p className={`text-2xs ${message.includes('success') ? 'text-green-400' : 'text-pink-400'}`}>
+                <p className={`text-2xs ${message.includes('success') ? 'text-green-600' : 'text-pink-600'}`}>
                   {message}
                 </p>
               )}
@@ -133,7 +133,7 @@ function Footer() {
                 <a
                   key={index}
                   href="#"
-                  className="text-gray-400 hover:text-pink-500 transition-colors duration-200"
+                  className="text-gray-600 hover:text-pink-500 transition-colors duration-200"
                   aria-label={social.label}
                 >
                   {social.icon}
@@ -144,7 +144,7 @@ function Footer() {
         </div>
 
         {/* Copyright Section */}
-        <div className="mt-6 pt-4 border-t border-gray-800 text-center text-gray-400 text-2xs">
+        <div className="mt-6 pt-4 border-t border-gray-300 text-center text-gray-600 text-2xs">
           &copy; {new Date().getFullYear()} LoreineDigital. All rights reserved.
         </div>
       </div>
