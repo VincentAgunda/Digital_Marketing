@@ -1,7 +1,59 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo, createContext, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaLaptopCode, FaMobileAlt, FaPaintBrush, FaBullhorn, FaChevronDown } from "react-icons/fa";
 import emailjs from "@emailjs/browser";
+
+// Theme Context
+const ThemeContext = createContext();
+
+export const ThemeProvider = ({ children }) => {
+  const [theme, setTheme] = useState('dark');
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') || 
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    setTheme(savedTheme);
+  }, []);
+
+  const toggleTheme = () => {
+    setTheme(prevTheme => {
+      const newTheme = prevTheme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('theme', newTheme);
+      return newTheme;
+    });
+  };
+
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
+
+export const useTheme = () => useContext(ThemeContext);
+
+// Theme Toggle Button
+const ThemeToggle = () => {
+  const { theme, toggleTheme } = useTheme();
+
+  return (
+    <motion.button
+      onClick={toggleTheme}
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
+      className={`fixed bottom-6 right-6 z-50 p-3 rounded-full shadow-lg flex items-center justify-center ${
+        theme === 'dark' ? 'bg-white text-gray-900' : 'bg-gray-900 text-white'
+      }`}
+      aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
+    >
+      {theme === 'dark' ? (
+        <span className="text-xl">☀️</span>
+      ) : (
+        <span className="text-xl">🌙</span>
+      )}
+    </motion.button>
+  );
+};
 
 // Constants
 const FONT_STYLE = {
@@ -93,6 +145,40 @@ const FAQ_DATA = [
 ];
 
 const Home = () => {
+  const { theme } = useTheme();
+  
+  // Theme-specific styles
+  const themeStyles = {
+    dark: {
+      background: 'bg-gray-950',
+      text: 'text-gray-100',
+      secondaryText: 'text-gray-400',
+      accentText: 'text-cyan-400',
+      accentTextHover: 'hover:text-cyan-300',
+      border: 'border-gray-800',
+      cardBg: 'bg-gray-900/30',
+      modalBg: 'bg-gray-900',
+      buttonBg: 'bg-cyan-600 hover:bg-cyan-700',
+      buttonSecondary: 'border-gray-600 hover:border-cyan-500',
+      gradientText: 'from-cyan-400 to-blue-500'
+    },
+    light: {
+      background: 'bg-[#F0F8FF]',
+      text: 'text-[#002D62]',
+      secondaryText: 'text-[#334155]',
+      accentText: 'text-[#007AFF]',
+      accentTextHover: 'hover:text-[#005ECB]',
+      border: 'border-[#E5E7EB]',
+      cardBg: 'bg-white',
+      modalBg: 'bg-white',
+      buttonBg: 'bg-[#007AFF] hover:bg-[#005ECB]',
+      buttonSecondary: 'border-[#E5E7EB] hover:border-[#007AFF]',
+      gradientText: 'from-[#007AFF] to-[#005ECB]'
+    }
+  };
+
+  const currentTheme = themeStyles[theme];
+
   // State
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -103,7 +189,6 @@ const Home = () => {
   });
   const [message, setMessage] = useState("");
   const [activeFAQ, setActiveFAQ] = useState(null);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   
   // Refs
   const formRef = useRef();
@@ -116,10 +201,6 @@ const Home = () => {
   const memoizedFaqData = useMemo(() => FAQ_DATA, []);
 
   // Event handlers
-  const handleMouseMove = useCallback((e) => {
-    setMousePosition({ x: e.clientX, y: e.clientY });
-  }, []);
-
   const handleFormChange = useCallback((e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -128,15 +209,6 @@ const Home = () => {
   const toggleFAQ = useCallback((index) => {
     setActiveFAQ(prev => prev === index ? null : index);
   }, []);
-
-  // Effects
-  useEffect(() => {
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      cancelAnimationFrame(animationFrameRef.current);
-    };
-  }, [handleMouseMove]);
 
   // Email sending
   const sendEmail = useCallback(async (e) => {
@@ -156,15 +228,6 @@ const Home = () => {
       setMessage("Failed to send. Please try again or contact us directly.");
     }
   }, []);
-
-  // Parallax effect
-  const getParallaxStyle = useCallback((intensity) => ({
-    transform: `translate(
-      ${(mousePosition.x - window.innerWidth/2) / (50 / intensity)}px,
-      ${(mousePosition.y - window.innerHeight/2) / (50 / intensity)}px
-    )`,
-    transition: "transform 0.1s linear"
-  }), [mousePosition.x, mousePosition.y]);
 
   // News animation
   useEffect(() => {
@@ -197,7 +260,11 @@ const Home = () => {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: 0.2, duration: 0.5 }}
     >
-      <div className="relative mx-auto w-full max-w-[240px] md:max-w-[280px] aspect-[9/19] bg-gray-900 rounded-[30px] overflow-hidden border-6 border-gray-800 shadow-xl p-0.5">
+      <div className={`relative mx-auto w-full max-w-[240px] md:max-w-[280px] aspect-[9/19] ${
+        theme === 'dark' ? 'bg-gray-900' : 'bg-white'
+      } rounded-[30px] overflow-hidden border-6 ${
+        theme === 'dark' ? 'border-gray-800' : 'border-gray-200'
+      } shadow-xl p-0.5`}>
         <div className="relative w-full h-full overflow-hidden">
           <img
             src="camera1.webp"
@@ -205,7 +272,11 @@ const Home = () => {
             className="w-full h-full object-cover"
             loading="lazy"
           />
-          <div className="absolute top-0 left-0 right-0 h-8 bg-black/50 backdrop-blur-sm flex items-center justify-between px-3 text-white text-[10px]">
+          <div className={`absolute top-0 left-0 right-0 h-8 ${
+            theme === 'dark' ? 'bg-black/50' : 'bg-white/80'
+          } backdrop-blur-sm flex items-center justify-between px-3 ${
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          } text-[10px]`}>
             <span>9:41</span>
             <div className="flex space-x-1">
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
@@ -219,28 +290,43 @@ const Home = () => {
               </svg>
             </div>
           </div>
-          <div className="absolute top-12 right-3 bg-blue-600/90 text-white px-2 py-1 rounded-full text-xs font-medium">
+          <div className={`absolute top-12 right-3 ${
+            theme === 'dark' ? 'bg-blue-600/90 text-white' : 'bg-blue-500 text-white'
+          } px-2 py-1 rounded-full text-xs font-medium`}>
             Tech Ready
           </div>
-          <div className="absolute bottom-16 left-3 bg-black/70 text-white px-3 py-1.5 rounded-lg">
+          <div className={`absolute bottom-16 left-3 ${
+            theme === 'dark' ? 'bg-black/70 text-white' : 'bg-white/90 text-gray-900'
+          } px-3 py-1.5 rounded-lg`}>
             <span className="text-xl font-bold">21i</span>
             <span className="block text-[10px]">Track</span>
           </div>
-          <div className="absolute bottom-0 left-0 right-0 h-12 bg-black/50 backdrop-blur-sm flex items-center justify-around">
+          <div className={`absolute bottom-0 left-0 right-0 h-12 ${
+            theme === 'dark' ? 'bg-black/50' : 'bg-white/80'
+          } backdrop-blur-sm flex items-center justify-around`}>
             <div className="w-5 h-5 rounded-full bg-blue-500"></div>
-            <div className="w-5 h-5 rounded-full bg-gray-600"></div>
-            <div className="w-5 h-5 rounded-full bg-gray-600"></div>
+            <div className={`w-5 h-5 rounded-full ${
+              theme === 'dark' ? 'bg-gray-600' : 'bg-gray-300'
+            }`}></div>
+            <div className={`w-5 h-5 rounded-full ${
+              theme === 'dark' ? 'bg-gray-600' : 'bg-gray-300'
+            }`}></div>
           </div>
-          <div className="absolute inset-0 bg-gradient-to-t from-gray-950/70 via-transparent to-transparent"></div>
         </div>
       </div>
-      <div className="absolute -bottom-4 -left-4 w-24 h-24 rounded-full bg-blue-600/20 blur-xl"></div>
+      <div className={`absolute -bottom-4 -left-4 w-24 h-24 rounded-full ${
+        theme === 'dark' ? 'bg-blue-600/20' : 'bg-blue-400/20'
+      } blur-xl`}></div>
     </motion.div>
-  ), []);
+  ), [theme]);
 
   const PortfolioItem = useCallback(({ item }) => (
     <motion.div
-      className="group relative overflow-hidden rounded-md border border-gray-800/40 hover:border-cyan-400/15 transition-all duration-250 bg-gray-900/30 backdrop-blur-xs"
+      className={`group relative overflow-hidden rounded-md border ${
+        theme === 'dark' ? 'border-gray-800/40 hover:border-cyan-400/15' : 'border-gray-200 hover:border-blue-400/30'
+      } transition-all duration-250 ${
+        theme === 'dark' ? 'bg-gray-900/30' : 'bg-white'
+      } backdrop-blur-xs`}
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
@@ -252,15 +338,20 @@ const Home = () => {
           className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-400"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-950/70 via-gray-950/20 to-transparent" />
       </div>
       <div className="p-4">
-        <h3 className="text-base font-medium mb-1">{item.title}</h3>
-        <p className="text-cyan-400 text-2xs mb-1.5">{item.category}</p>
-        <p className="text-gray-400 text-2xs">{item.excerpt}</p>
+        <h3 className={`text-base font-medium mb-1 ${
+          theme === 'dark' ? 'text-white' : 'text-gray-900'
+        }`}>{item.title}</h3>
+        <p className={`${
+          theme === 'dark' ? 'text-cyan-400' : 'text-blue-500'
+        } text-2xs mb-1.5`}>{item.category}</p>
+        <p className={`${
+          theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+        } text-2xs`}>{item.excerpt}</p>
       </div>
     </motion.div>
-  ), []);
+  ), [theme]);
 
   const NewsItem = useCallback(({ item }) => (
     <div className="min-w-[300px] max-w-sm group">
@@ -271,22 +362,33 @@ const Home = () => {
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-950/50 via-transparent to-transparent" />
       </div>
-      <p className="text-gray-500 text-sm mb-2">{item.date}</p>
-      <h3 className="text-xl font-medium mb-2 group-hover:text-cyan-400 transition-colors">
+      <p className={`${
+        theme === 'dark' ? 'text-gray-500' : 'text-gray-600'
+      } text-sm mb-2`}>{item.date}</p>
+      <h3 className={`text-xl font-medium mb-2 group-hover:${
+        theme === 'dark' ? 'text-cyan-400' : 'text-blue-600'
+      } transition-colors ${
+        theme === 'dark' ? 'text-white' : 'text-gray-900'
+      }`}>
         {item.title}
       </h3>
-      <p className="text-gray-400 text-sm mb-3">{item.excerpt}</p>
-      <a href="#" className="text-cyan-400 text-sm hover:text-white transition-colors">
+      <p className={`${
+        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+      } text-sm mb-3`}>{item.excerpt}</p>
+      <a href="#" className={`${
+        theme === 'dark' ? 'text-cyan-400 hover:text-white' : 'text-blue-500 hover:text-blue-700'
+      } transition-colors text-sm`}>
         Read More →
       </a>
     </div>
-  ), []);
+  ), [theme]);
 
   const FAQItem = useCallback(({ item, index, isActive, onClick }) => (
     <motion.div
-      className="border-b border-gray-800 pb-4"
+      className={`border-b ${
+        theme === 'dark' ? 'border-gray-800' : 'border-gray-200'
+      } pb-4`}
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
@@ -296,9 +398,11 @@ const Home = () => {
         className="flex justify-between items-center w-full text-left py-4"
         onClick={() => onClick(index)}
       >
-        <h3 className="text-lg font-medium">{item.q}</h3>
+        <h3 className={`text-lg font-medium ${
+          theme === 'dark' ? 'text-white' : 'text-gray-900'
+        }`}>{item.q}</h3>
         <div className={`transition-transform ${isActive ? 'rotate-180' : ''}`}>
-          <FaChevronDown className="text-cyan-400" />
+          <FaChevronDown className={theme === 'dark' ? 'text-cyan-400' : 'text-blue-500'} />
         </div>
       </button>
       <AnimatePresence>
@@ -310,83 +414,90 @@ const Home = () => {
             transition={{ duration: 0.3 }}
             className="overflow-hidden"
           >
-            <p className="text-gray-400 pb-4">{item.a}</p>
+            <p className={`${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            } pb-4`}>{item.a}</p>
           </motion.div>
         )}
       </AnimatePresence>
     </motion.div>
-  ), []);
+  ), [theme]);
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="min-h-screen bg-gray-950 text-gray-100 overflow-x-hidden"
+      className={`min-h-screen ${currentTheme.background} ${currentTheme.text} overflow-x-hidden transition-colors duration-300`}
       style={FONT_STYLE}
     >
-      {/* Background elements */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,...')] opacity-5"></div>
-        <div
-          className="absolute inset-0 opacity-15"
-          style={{
-            background: `radial-gradient(circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(34, 211, 238, 0.08) 0%, transparent 70%)`
-          }}
-        ></div>
+{/* Hero Section */}
+<section className={`relative py-24 px-6 md:px-16 lg:px-32 overflow-hidden ${
+  theme === 'dark' ? 'text-white' : 'text-gray-900'
+}`}>
+  <div className="absolute inset-0">
+    <img
+      src="camera1.webp"
+      alt="Background"
+      className="w-full h-full object-cover"
+      loading="lazy"
+    />
+    <div className={`absolute inset-0 ${
+      theme === 'dark' ? 'bg-black/20' : 'bg-white/10'
+    } backdrop-blur-sm`}></div>
+  </div>
+
+  <div className="relative z-10 max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.7 }}
+    >
+      <h1 className="text-4xl md:text-5xl font-semibold leading-tight mb-5">
+        <span className={`text-transparent bg-clip-text bg-gradient-to-r ${
+          theme === 'dark' ? 'from-[#42A5F5] to-[#E91E63]' : 'from-[#42A5F5] to-[#E91E63]'
+        } font-medium tracking-tight`}>Nexture Digital</span><br />
+        Designing <span className={theme === 'dark' ? 'text-[#E91E63]' : 'text-[#E91E63]'}>futuristic</span> experiences
+      </h1>
+      <p className={`${
+        theme === 'dark' ? 'text-gray-400' : 'text-gray-400' // Adjusted text colors for better visibility
+      } text-base md:text-lg max-w-md mb-6`}>
+        We blend AI, neural UX, and modern tech into sleek adaptive interfaces.
+      </p>
+      <div className="flex flex-wrap gap-4">
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          onClick={() => setShowModal(true)}
+          className={`px-5 py-2.5 ${
+            theme === 'dark' ? 'bg-[#42A5F5] hover:bg-[#64B5F6]' : 'bg-[#42A5F5] hover:bg-[#64B5F6]'
+          } rounded-lg text-sm font-medium shadow-md transition text-white`}
+        >
+          Start Project
+        </motion.button>
+        <motion.a
+          href="#work"
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          className={`px-5 py-2.5 border ${
+            theme === 'dark' ? 'border-gray-600 hover:border-[#E91E63]' : 'border-gray-300 hover:border-[#E91E63]'
+          } rounded-lg text-sm font-medium transition ${
+            theme === 'dark' ? 'text-gray-400' : 'text-gray-700' // Adjusted text colors for better visibility
+          }`}
+        >
+          View Work
+        </motion.a>
       </div>
+    </motion.div>
 
-      {/* Hero Section */}
-      <section className="relative py-24 px-6 md:px-16 lg:px-32 overflow-hidden text-white">
-        <div className="absolute inset-0">
-          <img
-            src="camera1.webp"
-            alt="Background"
-            className="w-full h-full object-cover"
-            loading="lazy"
-          />
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
-        </div>
-
-        <div className="relative z-10 max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-          >
-            <h1 className="text-4xl md:text-5xl font-semibold leading-tight mb-5">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Nexture Digital</span><br />
-              Designing <span className="text-indigo-400">futuristic</span> experiences
-            </h1>
-            <p className="text-gray-300 text-base md:text-lg max-w-md mb-6">
-              We blend AI, neural UX, and modern tech into sleek adaptive interfaces.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => setShowModal(true)}
-                className="px-5 py-2.5 bg-cyan-600 hover:bg-cyan-700 rounded-lg text-sm font-medium shadow-md transition"
-              >
-                Start Project
-              </motion.button>
-              <motion.a
-                href="#work"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className="px-5 py-2.5 border border-gray-600 hover:border-cyan-500 rounded-lg text-sm font-medium transition"
-              >
-                View Work
-              </motion.a>
-            </div>
-          </motion.div>
-
-          <MobileMockup />
-        </div>
-      </section>
+    <MobileMockup />
+  </div>
+</section>
 
       {/* Portfolio Section */}
-      <section id="work" className="py-12 px-4 bg-gray-950/80 backdrop-blur-sm">
+      <section id="work" className={`py-12 px-4 ${
+        theme === 'dark' ? 'bg-gray-950/80' : 'bg-white/90'
+      } backdrop-blur-sm`}>
         <div className="max-w-5xl mx-auto">
           <motion.div
             className="text-center mb-10"
@@ -395,9 +506,13 @@ const Home = () => {
             viewport={{ once: true, margin: "-60px" }}
           >
             <h2 className="text-xl md:text-4xl font-light mb-4">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Selected</span> Works
+              <span className={`text-transparent bg-clip-text bg-gradient-to-r ${
+                theme === 'dark' ? 'from-cyan-400 to-blue-500' : 'from-blue-500 to-blue-700'
+              }`}>Selected</span> Works
             </h2>
-            <p className="text-gray-400 max-w-lg mx-auto text-xl">
+            <p className={`${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            } max-w-lg mx-auto text-xl`}>
               Explore our groundbreaking projects that redefine digital interaction paradigms.
             </p>
           </motion.div>
@@ -411,7 +526,9 @@ const Home = () => {
       </section>
 
       {/* Services Section */}
-      <section className="py-12 px-4 bg-gray-900 backdrop-blur-sm">
+      <section className={`py-12 px-4 ${
+        theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'
+      } backdrop-blur-sm`}>
         <div className="max-w-4xl mx-auto">
           <motion.div
             className="text-center mb-10"
@@ -419,53 +536,89 @@ const Home = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
           >
-            <h2 className="text-xl md:text-2xl font-light mb-2 text-[#ECF2F0]">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8BA89A] to-[#C7CFCA]">Specialized</span> Services
+            <h2 className="text-xl md:text-2xl font-light mb-2 ${
+              theme === 'dark' ? 'text-[#ECF2F0]' : 'text-gray-900'
+            }">
+              <span className={`text-transparent bg-clip-text bg-gradient-to-r ${
+                theme === 'dark' ? 'from-[#8BA89A] to-[#C7CFCA]' : 'from-blue-500 to-blue-700'
+              }`}>Specialized</span> Services
             </h2>
-            <p className="text-[#C7CFCA] max-w-lg mx-auto text-xs">
+            <p className={`${
+              theme === 'dark' ? 'text-[#C7CFCA]' : 'text-gray-600'
+            } max-w-lg mx-auto text-xs`}>
               Our offerings blend cutting-edge technology with intuitive design principles.
             </p>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-3">
             <motion.div
-              className="bg-gray-800 p-4 rounded-md border border-gray-700 hover:border-[#8BA89A] transition-colors"
+              className={`p-4 rounded-md border ${
+                theme === 'dark' ? 'border-gray-700 hover:border-[#8BA89A]' : 'border-gray-200 hover:border-blue-400'
+              } transition-colors ${
+                theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+              }`}
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ delay: 0.08, duration: 0.4 }}
             >
-              <div className="text-[#8BA89A] text-lg mb-2"><FaLaptopCode /></div>
-              <h3 className="text-base font-medium mb-1 text-[#ECF2F0]">Quantum Web Design</h3>
-              <p className="text-[#C7CFCA] text-2xs">
+              <div className={`${
+                theme === 'dark' ? 'text-[#8BA89A]' : 'text-blue-500'
+              } text-lg mb-2`}><FaLaptopCode /></div>
+              <h3 className={`text-base font-medium mb-1 ${
+                theme === 'dark' ? 'text-[#ECF2F0]' : 'text-gray-900'
+              }`}>Quantum Web Design</h3>
+              <p className={`${
+                theme === 'dark' ? 'text-[#C7CFCA]' : 'text-gray-600'
+              } text-2xs`}>
                 Websites that leverage quantum principles for adaptive layouts and predictive interfaces.
               </p>
             </motion.div>
 
             <motion.div
-              className="bg-gray-800 p-4 rounded-md border border-gray-700 hover:border-[#8BA89A] transition-colors"
+              className={`p-4 rounded-md border ${
+                theme === 'dark' ? 'border-gray-700 hover:border-[#8BA89A]' : 'border-gray-200 hover:border-blue-400'
+              } transition-colors ${
+                theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+              }`}
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ delay: 0.16, duration: 0.4 }}
             >
-              <div className="text-[#8BA89A] text-lg mb-2"><FaMobileAlt /></div>
-              <h3 className="text-base font-medium mb-1 text-[#ECF2F0]">Neural Mobile Apps</h3>
-              <p className="text-[#C7CFCA] text-2xs">
+              <div className={`${
+                theme === 'dark' ? 'text-[#8BA89A]' : 'text-blue-500'
+              } text-lg mb-2`}><FaMobileAlt /></div>
+              <h3 className={`text-base font-medium mb-1 ${
+                theme === 'dark' ? 'text-[#ECF2F0]' : 'text-gray-900'
+              }`}>Neural Mobile Apps</h3>
+              <p className={`${
+                theme === 'dark' ? 'text-[#C7CFCA]' : 'text-gray-600'
+              } text-2xs`}>
                 Thought-controlled applications with biometric feedback and cognitive load optimization.
               </p>
             </motion.div>
 
             <motion.div
-              className="bg-gray-800 p-4 rounded-md border border-gray-700 hover:border-[#8BA89A] transition-colors"
+              className={`p-4 rounded-md border ${
+                theme === 'dark' ? 'border-gray-700 hover:border-[#8BA89A]' : 'border-gray-200 hover:border-blue-400'
+              } transition-colors ${
+                theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+              }`}
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ delay: 0.24, duration: 0.4 }}
             >
-              <div className="text-[#8BA89A] text-lg mb-2"><FaPaintBrush /></div>
-              <h3 className="text-base font-medium mb-1 text-[#ECF2F0]">Motion Design</h3>
-              <p className="text-[#C7CFCA] text-2xs">
+              <div className={`${
+                theme === 'dark' ? 'text-[#8BA89A]' : 'text-blue-500'
+              } text-lg mb-2`}><FaPaintBrush /></div>
+              <h3 className={`text-base font-medium mb-1 ${
+                theme === 'dark' ? 'text-[#ECF2F0]' : 'text-gray-900'
+              }`}>Motion Design</h3>
+              <p className={`${
+                theme === 'dark' ? 'text-[#C7CFCA]' : 'text-gray-600'
+              } text-2xs`}>
                 Engaging animations and micro-interactions.
               </p>
             </motion.div>
@@ -474,7 +627,9 @@ const Home = () => {
       </section>
 
       {/* News Section */}
-      <section className="py-20 px-6 overflow-hidden">
+      <section className={`py-20 px-6 overflow-hidden ${
+        theme === 'dark' ? 'bg-gray-950' : 'bg-white'
+      }`}>
         <div className="max-w-6xl mx-auto">
           <motion.div
             className="flex justify-between items-end mb-12"
@@ -484,11 +639,15 @@ const Home = () => {
           >
             <div>
               <h2 className="text-3xl md:text-4xl font-light mb-2">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Latest</span> Insights
+                <span className={`text-transparent bg-clip-text bg-gradient-to-r ${
+                  theme === 'dark' ? 'from-cyan-400 to-blue-500' : 'from-blue-500 to-blue-700'
+                }`}>Latest</span> Insights
               </h2>
-              <p className="text-gray-400">Stay updated with the frontier of digital interaction</p>
+              <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Stay updated with the frontier of digital interaction</p>
             </div>
-            <a href="#" className="text-cyan-400 hover:text-white transition-colors hidden md:block">
+            <a href="#" className={`${
+              theme === 'dark' ? 'text-cyan-400 hover:text-white' : 'text-blue-500 hover:text-blue-700'
+            } transition-colors hidden md:block`}>
               View All →
             </a>
           </motion.div>
@@ -504,7 +663,9 @@ const Home = () => {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 px-6 bg-gray-950/50">
+      <section className={`py-20 px-6 ${
+        theme === 'dark' ? 'bg-gray-950/50' : 'bg-gray-50'
+      }`}>
         <div className="max-w-3xl mx-auto">
           <motion.div
             className="text-center mb-12"
@@ -513,9 +674,11 @@ const Home = () => {
             viewport={{ once: true, margin: "-100px" }}
           >
             <h2 className="text-3xl md:text-4xl font-light mb-4">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Frequently</span> Asked
+              <span className={`text-transparent bg-clip-text bg-gradient-to-r ${
+                theme === 'dark' ? 'from-cyan-400 to-blue-500' : 'from-blue-500 to-blue-700'
+              }`}>Frequently</span> Asked
             </h2>
-            <p className="text-gray-400">Answers to common questions about our futuristic approach</p>
+            <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Answers to common questions about our futuristic approach</p>
           </motion.div>
 
           <div className="space-y-4">
@@ -542,19 +705,25 @@ const Home = () => {
             exit={{ opacity: 0 }}
           >
             <div
-              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+              className={`absolute inset-0 ${
+                theme === 'dark' ? 'bg-black/80' : 'bg-black/40'
+              } backdrop-blur-sm`}
               onClick={() => setShowModal(false)}
             ></div>
           
             <motion.div
-              className="relative bg-gray-900 rounded-xl border border-gray-800 shadow-2xl w-full max-w-md p-6"
+              className={`relative rounded-xl border shadow-2xl w-full max-w-md p-6 ${
+                theme === 'dark' ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'
+              }`}
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               transition={{ type: "spring", damping: 25 }}
             >
               <button
-                className="absolute top-4 right-4 text-gray-400 hover:text-white"
+                className={`absolute top-4 right-4 ${
+                  theme === 'dark' ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'
+                }`}
                 onClick={() => setShowModal(false)}
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -562,54 +731,82 @@ const Home = () => {
                 </svg>
               </button>
 
-              <h3 className="text-2xl font-light mb-6">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Start</span> Your Project
+              <h3 className={`text-2xl font-light mb-6 ${
+                theme === 'dark' ? 'text-white' : 'text-gray-900'
+              }`}>
+                <span className={`text-transparent bg-clip-text bg-gradient-to-r ${
+                  theme === 'dark' ? 'from-cyan-400 to-blue-500' : 'from-blue-500 to-blue-700'
+                }`}>Start</span> Your Project
               </h3>
 
               <form ref={formRef} onSubmit={sendEmail} className="space-y-4">
                 <div>
-                  <label className="block text-sm text-gray-400 mb-1">Your Name</label>
+                  <label className={`block text-sm ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  } mb-1`}>Your Name</label>
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleFormChange}
-                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 outline-none transition"
+                    className={`w-full ${
+                      theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'
+                    } border rounded-lg px-4 py-3 ${
+                      theme === 'dark' ? 'text-white' : 'text-gray-900'
+                    } focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 outline-none transition`}
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm text-gray-400 mb-1">Email Address</label>
+                  <label className={`block text-sm ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  } mb-1`}>Email Address</label>
                   <input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleFormChange}
-                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 outline-none transition"
+                    className={`w-full ${
+                      theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'
+                    } border rounded-lg px-4 py-3 ${
+                      theme === 'dark' ? 'text-white' : 'text-gray-900'
+                    } focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 outline-none transition`}
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm text-gray-400 mb-1">Project Details</label>
+                  <label className={`block text-sm ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  } mb-1`}>Project Details</label>
                   <textarea
                     name="project"
                     value={formData.project}
                     onChange={handleFormChange}
                     rows="3"
-                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 outline-none transition"
+                    className={`w-full ${
+                      theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'
+                    } border rounded-lg px-4 py-3 ${
+                      theme === 'dark' ? 'text-white' : 'text-gray-900'
+                    } focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 outline-none transition`}
                     required
                   ></textarea>
                 </div>
 
                 <div>
-                  <label className="block text-sm text-gray-400 mb-1">Budget Range</label>
+                  <label className={`block text-sm ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  } mb-1`}>Budget Range</label>
                   <select
                     name="budget"
                     value={formData.budget}
                     onChange={handleFormChange}
-                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 outline-none appearance-none"
+                    className={`w-full ${
+                      theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'
+                    } border rounded-lg px-4 py-3 ${
+                      theme === 'dark' ? 'text-white' : 'text-gray-900'
+                    } focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 outline-none appearance-none`}
                     required
                   >
                     <option value="">Select an option</option>
@@ -621,9 +818,13 @@ const Home = () => {
 
                 {message && (
                   <div className={`text-sm py-2 px-3 rounded-lg ${
-                    message.includes("sent") ? "bg-green-900/50 text-green-400" :
-                    message.includes("Sending") ? "bg-blue-900/50 text-blue-400" :
-                    "bg-red-900/50 text-red-400"
+                    message.includes("sent") ? (
+                      theme === 'dark' ? 'bg-green-900/50 text-green-400' : 'bg-green-100 text-green-800'
+                    ) : message.includes("Sending") ? (
+                      theme === 'dark' ? 'bg-blue-900/50 text-blue-400' : 'bg-blue-100 text-blue-800'
+                    ) : (
+                      theme === 'dark' ? 'bg-red-900/50 text-red-400' : 'bg-red-100 text-red-800'
+                    )
                   }`}>
                     {message}
                   </div>
@@ -631,7 +832,11 @@ const Home = () => {
 
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:from-cyan-500 hover:to-blue-500 transition-all disabled:opacity-50"
+                  className={`w-full bg-gradient-to-r ${
+                    theme === 'dark' ? 'from-cyan-600 to-blue-600' : 'from-blue-600 to-blue-700'
+                  } text-white py-3 px-6 rounded-lg font-medium hover:${
+                    theme === 'dark' ? 'from-cyan-500 to-blue-500' : 'from-blue-500 to-blue-600'
+                  } transition-all disabled:opacity-50`}
                   disabled={message === "Sending..."}
                 >
                   {message === "Sending..." ? "Sending..." : "Submit Inquiry"}
@@ -641,8 +846,18 @@ const Home = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <ThemeToggle />
     </motion.div>
   );
 };
 
-export default Home;
+const App = () => {
+  return (
+    <ThemeProvider>
+      <Home />
+    </ThemeProvider>
+  );
+};
+
+export default App;

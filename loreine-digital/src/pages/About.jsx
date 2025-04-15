@@ -122,13 +122,13 @@ const AboutPage = () => {
             animate="visible"
           >
             <motion.span className="block" variants={LINE_VARIANTS}>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Crafting</span> digital 
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#42A5F5] to-[#E91E63]">Crafting</span> digital 
             </motion.span>
             <motion.span className="block" variants={LINE_VARIANTS}>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">experiences</span> with 
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#42A5F5] to-[#E91E63]">experiences</span> with 
             </motion.span>
             <motion.span className="block" variants={LINE_VARIANTS}>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">purpose</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#42A5F5] to-[#E91E63]">purpose</span>
             </motion.span>
           </motion.h1>
 
@@ -139,13 +139,13 @@ const AboutPage = () => {
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
           >
-            Founded in <span className="text-cyan-400">2025</span>, we build <span className="text-blue-400">next-gen</span> digital solutions.
+            Founded in <span className="text-[#E91E63]">2025</span>, we build <span className="text-[#42A5F5]">next-gen</span> digital solutions.
           </motion.p>
 
           <motion.button
             onClick={toggleTeamModal}
             aria-haspopup="dialog"
-            className="px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-lg hover:from-cyan-500 hover:to-blue-500 transition-all"
+            className="px-6 py-3 bg-gradient-to-r from-[#42A5F5] to-[#E91E63] rounded-lg hover:from-[#64B5F6] hover:to-[#EC407A] transition-all"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
@@ -216,7 +216,7 @@ const AboutPage = () => {
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
-              <h3 id="team-popup-title" className="text-2xl font-light mb-6 text-center text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">
+              <h3 id="team-popup-title" className="text-2xl font-light mb-6 text-center text-transparent bg-clip-text bg-gradient-to-r from-[#42A5F5] to-[#E91E63]">
                 Our Core Team
               </h3>
 
@@ -229,7 +229,7 @@ const AboutPage = () => {
                 {TEAM_MEMBERS.map((member) => (
                   <motion.div
                     key={member.id}
-                    className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 hover:border-cyan-400/30 transition-colors flex flex-col"
+                    className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 hover:border-[#E91E63]/30 transition-colors flex flex-col"
                     variants={TEAM_CARD_VARIANTS}
                   >
                     <div className="h-40 sm:h-32 md:h-40 relative overflow-hidden">
@@ -245,7 +245,7 @@ const AboutPage = () => {
                     </div>
                     <div className="p-4 flex flex-col flex-grow">
                       <h4 className="font-medium">{member.name}</h4>
-                      <p className="text-cyan-400 text-sm mb-2">{member.role}</p>
+                      <p className="text-[#E91E63] text-sm mb-2">{member.role}</p>
                       <p className="text-gray-400 text-xs mb-3 flex-grow">{member.bio}</p>
                       <div className="flex space-x-2 mt-auto">
                         <a 
@@ -253,7 +253,7 @@ const AboutPage = () => {
                           target="_blank" 
                           rel="noopener noreferrer" 
                           aria-label={`${member.name}'s LinkedIn`} 
-                          className="text-gray-400 hover:text-cyan-400 transition-colors"
+                          className="text-gray-400 hover:text-[#E91E63] transition-colors"
                         >
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                             <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/>
@@ -265,7 +265,7 @@ const AboutPage = () => {
                           target="_blank" 
                           rel="noopener noreferrer" 
                           aria-label={`${member.name}'s Twitter`} 
-                          className="text-gray-400 hover:text-cyan-400 transition-colors"
+                          className="text-gray-400 hover:text-[#E91E63] transition-colors"
                         >
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                             <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/>
@@ -290,7 +290,7 @@ const AboutPage = () => {
           viewport={{ once: true, amount: 0.5 }}
           transition={{ duration: 0.6 }}
         >
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">Design</span> Principles
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#42A5F5] to-[#E91E63]">Design</span> Principles
         </motion.h2>
         <motion.div
           className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto"
@@ -302,7 +302,7 @@ const AboutPage = () => {
           {DESIGN_PRINCIPLES.map((item, index) => (
             <motion.div
               key={item.title}
-              className="p-6 bg-gray-800/50 rounded-lg border border-gray-700 hover:border-cyan-400/30 transition-colors"
+              className="p-6 bg-gray-800/50 rounded-lg border border-gray-700 hover:border-[#E91E63]/30 transition-colors"
               variants={PRINCIPLE_CARD_VARIANTS}
             >
               <PulsingIcon index={index}>{item.icon}</PulsingIcon>
@@ -323,10 +323,10 @@ const AboutPage = () => {
           transition={{ duration: 0.6 }}
         >
           <h3 className="text-2xl font-light mb-6">
-            Ready to <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">ignite</span> your digital presence?
+            Ready to <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#42A5F5] to-[#E91E63]">ignite</span> your digital presence?
           </h3>
           <motion.button
-            className="px-8 py-3 bg-transparent text-cyan-400 rounded-lg border border-cyan-400 hover:bg-cyan-400/10 transition-colors"
+            className="px-8 py-3 bg-transparent text-[#E91E63] rounded-lg border border-[#E91E63] hover:bg-[#E91E63]/10 transition-colors"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
