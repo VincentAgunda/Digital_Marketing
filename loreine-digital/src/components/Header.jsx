@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { FaSearch, FaUserCircle, FaBars, FaTimes } from "react-icons/fa";
+import { FaSearch, FaUserCircle, FaBars, FaTimes, FaMoon, FaSun } from "react-icons/fa";
+import { FiCommand } from "react-icons/fi";
 import { Link, useLocation } from "react-router-dom";
 import { auth } from "../firebase";
 import { signOut } from "firebase/auth";
@@ -9,22 +10,29 @@ const navLinks = [
   { path: "/", label: "Home" },
   { path: "/about", label: "About" },
   { path: "/services", label: "Services" },
-  { path: "/portfolio", label: "Portfolio" },
+  { path: "/pricing", label: "Pricing" },
   { path: "/blogs", label: "Blogs" },
 ];
 
 const Header = React.memo(({ user }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
   const dropdownRef = useRef(null);
   const menuRef = useRef(null);
+  const searchRef = useRef(null);
   const location = useLocation();
 
+  // Close all menus
   const closeAllMenus = useCallback(() => {
     setDropdownOpen(false);
     setMobileMenuOpen(false);
+    setSearchOpen(false);
   }, []);
 
+  // Handle logout
   const handleLogout = useCallback(async () => {
     try {
       await signOut(auth);
@@ -34,48 +42,75 @@ const Header = React.memo(({ user }) => {
     }
   }, [closeAllMenus]);
 
+  // Toggle mobile menu
   const toggleMobileMenu = useCallback(() => {
     setMobileMenuOpen((prev) => !prev);
     setDropdownOpen(false);
+    setSearchOpen(false);
   }, []);
 
-  // Memoized navigation links to prevent unnecessary re-renders
+  // Toggle search
+  const toggleSearch = useCallback(() => {
+    setSearchOpen((prev) => !prev);
+    setDropdownOpen(false);
+    setMobileMenuOpen(false);
+  }, []);
+
+  // Toggle dark mode
+  const toggleDarkMode = useCallback(() => {
+    setDarkMode((prev) => !prev);
+    if (!darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
+
+  // Memoized navigation links
   const renderNavLinks = useMemo(() => (
     navLinks.map((link) => (
       <li key={link.path}>
         <Link
           to={link.path}
-          className={`text-gray-600 hover:text-gray-800 transition-colors duration-200 ${
-            location.pathname === link.path ? "font-medium text-gray-900" : ""
+          className={`relative px-2 py-1 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 group ${
+            location.pathname === link.path ? "font-medium text-gray-900 dark:text-white" : ""
           }`}
           onClick={closeAllMenus}
         >
           {link.label}
+          <span className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300 ${
+            location.pathname === link.path ? "w-full" : "w-0 group-hover:w-full"
+          }`}></span>
         </Link>
       </li>
     ))
   ), [closeAllMenus, location.pathname]);
 
+  // Memoized mobile menu links
   const renderMobileMenuLinks = useMemo(() => (
-    navLinks.map((link) => (
+    navLinks.map((link, index) => (
       <motion.li
         key={link.path}
         initial={{ x: 20, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
-        transition={{ delay: 0.05 }}
+        transition={{ delay: index * 0.05 + 0.1 }}
       >
         <Link
           to={link.path}
-          className="block py-1.5 px-3 text-gray-800 hover:bg-white/30 rounded transition-colors text-sm"
+          className={`block py-2 px-4 rounded-lg transition-colors text-sm ${
+            location.pathname === link.path 
+              ? "bg-gradient-to-r from-blue-500/10 to-purple-500/10 text-blue-600 dark:text-blue-400"
+              : "text-gray-700 dark:text-gray-300 hover:bg-gray-100/50 dark:hover:bg-gray-700/50"
+          }`}
           onClick={closeAllMenus}
         >
           {link.label}
         </Link>
       </motion.li>
     ))
-  ), [closeAllMenus]);
+  ), [closeAllMenus, location.pathname]);
 
-  // Close dropdown or menu when clicking outside
+  // Close menus when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -85,39 +120,139 @@ const Header = React.memo(({ user }) => {
           !event.target.closest('[aria-label="Mobile menu"]')) {
         setMobileMenuOpen(false);
       }
+      if (searchRef.current && !searchRef.current.contains(event.target) && 
+          !event.target.closest('[aria-label="Search"]')) {
+        setSearchOpen(false);
+      }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Track scroll position for header effects
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.ctrlKey && e.key === 'k') {
+        e.preventDefault();
+        toggleSearch();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [toggleSearch]);
+
   return (
     <>
-      <header className="bg-[#f2f4f8] h-16 fixed top-0 left-0 w-full z-50 shadow-md">
-        <nav className="max-w-6xl mx-auto px-4 flex justify-between items-center h-full">
-          <div className="text-xl font-bold text-gray-800">
-            <Link to="/" onClick={closeAllMenus}>LOGO</Link>
-          </div>
+      <motion.header 
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+          scrollY > 10 
+            ? "bg-white/90 dark:bg-gray-900/90 backdrop-blur-md shadow-sm" 
+            : "bg-white dark:bg-gray-900"
+        }`}
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
+          {/* Logo */}
+          <motion.div 
+            className="flex items-center"
+            whileHover={{ scale: 1.05 }}
+          >
+            <Link 
+              to="/" 
+              onClick={closeAllMenus}
+              className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+            >
+              NEXTURE
+            </Link>
+          </motion.div>
 
-          <ul className="hidden md:flex space-x-6">
+          {/* Desktop Navigation */}
+          <ul className="hidden md:flex space-x-6 items-center">
             {renderNavLinks}
           </ul>
 
+          {/* Right Side Controls */}
           <div className="flex items-center space-x-4">
-            <button aria-label="Search">
-              <FaSearch className="text-gray-600 cursor-pointer hover:text-gray-800 transition-colors" />
-            </button>
+            {/* Search Button */}
+            <motion.div 
+              className="relative"
+              ref={searchRef}
+              whileHover={{ scale: 1.1 }}
+            >
+              <button 
+                aria-label="Search"
+                onClick={toggleSearch}
+                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                <FaSearch className="text-gray-600 dark:text-gray-400" />
+              </button>
+              
+              <AnimatePresence>
+                {searchOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 shadow-lg rounded-lg z-50 overflow-hidden border border-gray-200 dark:border-gray-700"
+                  >
+                    <div className="p-2 flex items-center">
+                      <FaSearch className="text-gray-400 mr-2" />
+                      <input
+                        type="text"
+                        placeholder="Search..."
+                        className="w-full bg-transparent outline-none text-gray-700 dark:text-gray-300 placeholder-gray-400"
+                        autoFocus
+                      />
+                      <span className="ml-2 text-xs text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded">
+                        ⌘K
+                      </span>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
 
+            {/* Dark Mode Toggle */}
+            <motion.button
+              aria-label="Toggle dark mode"
+              onClick={toggleDarkMode}
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              {darkMode ? (
+                <FaSun className="text-yellow-400" />
+              ) : (
+                <FaMoon className="text-gray-600" />
+              )}
+            </motion.button>
+
+            {/* User Menu */}
             <div className="relative" ref={dropdownRef}>
               {user ? (
                 <>
-                  <button
+                  <motion.button
                     aria-label="User menu"
                     onClick={() => setDropdownOpen(!dropdownOpen)}
                     className="focus:outline-none"
+                    whileHover={{ scale: 1.1 }}
                   >
-                    <FaUserCircle className="text-gray-700 text-2xl cursor-pointer hover:text-gray-900 transition-colors" />
-                  </button>
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white">
+                      {user.email.charAt(0).toUpperCase()}
+                    </div>
+                  </motion.button>
                   <AnimatePresence>
                     {dropdownOpen && (
                       <motion.div
@@ -125,12 +260,15 @@ const Header = React.memo(({ user }) => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute right-0 mt-2 w-44 bg-white shadow-lg rounded-md z-50 overflow-hidden"
+                        className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-lg z-50 overflow-hidden border border-gray-200 dark:border-gray-700"
                       >
+                        <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">{user.email}</p>
+                        </div>
                         {user.email === "admin@loreinedigital.com" && (
                           <Link
                             to="/admin-dashboard"
-                            className="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
+                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                             onClick={closeAllMenus}
                           >
                             Admin Dashboard
@@ -138,35 +276,49 @@ const Header = React.memo(({ user }) => {
                         )}
                         <button
                           onClick={handleLogout}
-                          className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                         >
-                          Logout
+                          Sign Out
                         </button>
                       </motion.div>
                     )}
                   </AnimatePresence>
                 </>
               ) : (
-                <Link to="/login" onClick={closeAllMenus} aria-label="Login">
-                  <FaUserCircle className="text-gray-700 text-2xl cursor-pointer hover:text-gray-900 transition-colors" />
+                <Link 
+                  to="/login" 
+                  onClick={closeAllMenus} 
+                  aria-label="Login"
+                  className="flex items-center"
+                >
+                  <motion.div 
+                    className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center"
+                    whileHover={{ scale: 1.1 }}
+                  >
+                    <FaUserCircle className="text-gray-600 dark:text-gray-400" />
+                  </motion.div>
                 </Link>
               )}
             </div>
 
-            <button
-              className="md:hidden focus:outline-none"
+            {/* Mobile Menu Button */}
+            <motion.button
+              className="md:hidden focus:outline-none p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               onClick={toggleMobileMenu}
               aria-label="Mobile menu"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
             >
               {mobileMenuOpen ? (
-                <FaTimes className="text-gray-600 text-2xl hover:text-gray-800 transition-colors" />
+                <FaTimes className="text-gray-600 dark:text-gray-400" />
               ) : (
-                <FaBars className="text-gray-600 text-2xl hover:text-gray-800 transition-colors" />
+                <FaBars className="text-gray-600 dark:text-gray-400" />
               )}
-            </button>
+            </motion.button>
           </div>
         </nav>
 
+        {/* Mobile Menu */}
         <AnimatePresence>
           {mobileMenuOpen && (
             <>
@@ -183,22 +335,64 @@ const Header = React.memo(({ user }) => {
                 animate={{ x: 0 }}
                 exit={{ x: "100%" }}
                 transition={{ type: "tween", ease: "easeOut", duration: 0.25 }}
-                className="fixed top-16 right-0 w-56 z-50 bg-white/20 backdrop-blur-lg shadow-lg p-3 border-l border-white/30 rounded-bl-lg"
+                className="fixed top-16 right-0 w-64 h-[calc(100vh-4rem)] z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg shadow-lg p-4 overflow-y-auto"
               >
-                <ul className="flex flex-col space-y-2">
+                <div className="mb-4 px-2 py-3 rounded-lg bg-gray-100/50 dark:bg-gray-800/50">
+                  {user ? (
+                    <div className="flex items-center">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white mr-3">
+                        {user.email.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">{user.email}</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <Link
+                      to="/login"
+                      className="flex items-center"
+                      onClick={closeAllMenus}
+                    >
+                      <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center mr-3">
+                        <FaUserCircle className="text-gray-600 dark:text-gray-400 text-xl" />
+                      </div>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">Sign In</span>
+                    </Link>
+                  )}
+                </div>
+
+                <ul className="space-y-2">
                   {renderMobileMenuLinks}
 
-                  {user ? (
+                  <motion.li
+                    initial={{ x: 20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <button
+                      onClick={toggleDarkMode}
+                      className="w-full flex items-center justify-between py-2 px-4 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100/50 dark:hover:bg-gray-700/50 transition-colors text-sm"
+                    >
+                      <span>Dark Mode</span>
+                      {darkMode ? (
+                        <FaSun className="text-yellow-400" />
+                      ) : (
+                        <FaMoon className="text-gray-600" />
+                      )}
+                    </button>
+                  </motion.li>
+
+                  {user && (
                     <>
                       {user.email === "admin@loreinedigital.com" && (
                         <motion.li
                           initial={{ x: 20, opacity: 0 }}
                           animate={{ x: 0, opacity: 1 }}
-                          transition={{ delay: 0.1 }}
+                          transition={{ delay: 0.35 }}
                         >
                           <Link
                             to="/admin-dashboard"
-                            className="block py-1.5 px-3 text-gray-800 hover:bg-white/30 rounded transition-colors text-sm"
+                            className="block py-2 px-4 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100/50 dark:hover:bg-gray-700/50 transition-colors text-sm"
                             onClick={closeAllMenus}
                           >
                             Admin Dashboard
@@ -208,42 +402,29 @@ const Header = React.memo(({ user }) => {
                       <motion.li
                         initial={{ x: 20, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
-                        transition={{ delay: 0.15 }}
+                        transition={{ delay: 0.4 }}
                       >
                         <button
                           onClick={handleLogout}
-                          className="w-full text-left py-1.5 px-3 text-gray-800 hover:bg-white/30 rounded transition-colors text-sm"
+                          className="w-full text-left py-2 px-4 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100/50 dark:hover:bg-gray-700/50 transition-colors text-sm"
                         >
-                          Logout
+                          Sign Out
                         </button>
                       </motion.li>
                     </>
-                  ) : (
-                    <motion.li
-                      initial={{ x: 20, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      transition={{ delay: 0.2 }}
-                    >
-                      <Link
-                        to="/login"
-                        className="block py-1.5 px-3 text-gray-800 hover:bg-white/30 rounded transition-colors text-sm"
-                        onClick={closeAllMenus}
-                      >
-                        Login
-                      </Link>
-                    </motion.li>
                   )}
                 </ul>
               </motion.div>
             </>
           )}
         </AnimatePresence>
-      </header>
+      </motion.header>
 
+      {/* Spacer for fixed header */}
       <div className="h-16"></div>
     </>
   );
 });
 
-Header.displayName = "Header"; // For better debugging in React DevTools
+Header.displayName = "Header";
 export default Header;

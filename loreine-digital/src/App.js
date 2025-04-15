@@ -7,7 +7,7 @@ import Footer from "./components/Footer";
 
 import About from "./pages/About";
 import Services from "./pages/Services";
-import Portfolio from "./pages/Portfolio";
+import Pricing from "./pages/Pricing";
 import Home from "./pages/Home";
 import Blogs from "./pages/Blogs";
 
@@ -86,7 +86,7 @@ function App() {
             }
           />
           <Route
-            path="/portfolio"
+            path="/pricing"
             element={
               <motion.div
                 variants={pageVariants}
@@ -95,7 +95,7 @@ function App() {
                 exit="exit"
                 className="page-content"
               >
-                <Portfolio />
+                <Pricing />
               </motion.div>
             }
           />
