@@ -40,16 +40,16 @@ function Footer() {
   };
 
   return (
-    <footer className="bg-[#F0F0F0] text-gray-800 pt-8 pb-4 font-sf">
+    <footer className="bg-gray-900 text-gray-300 pt-8 pb-4 font-sf">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-          
+
           {/* Address Section */}
           <div className="space-y-2">
-            <h3 className="text-sm font-semibold hover:text-pink-500 transition-colors duration-200 cursor-default">
+            <h3 className="text-sm font-semibold hover:text-blue-500 transition-colors duration-200 cursor-default text-gray-100">
               ADDRESS
             </h3>
-            <p className="text-gray-600 text-xs hover:text-gray-900 transition-colors duration-200">
+            <p className="text-gray-500 text-xs hover:text-gray-300 transition-colors duration-200">
               123 Main Street<br />
               Anytown, Nairobi
             </p>
@@ -57,17 +57,17 @@ function Footer() {
 
           {/* Navigation Section */}
           <div className="space-y-2">
-            <h3 className="text-sm font-semibold hover:text-pink-500 transition-colors duration-200 cursor-default">
+            <h3 className="text-sm font-semibold hover:text-indigo-500 transition-colors duration-200 cursor-default text-gray-100">
               NAVIGATION
             </h3>
             <ul className="space-y-1.5">
               {['Home', 'About', 'Services', 'Portfolio', 'Contact'].map((item) => (
                 <li key={item}>
-                  <a 
-                    href="#" 
-                    className="text-gray-600 text-xs hover:text-pink-500 transition-colors duration-200 flex items-center"
+                  <a
+                    href="#"
+                    className="text-gray-500 text-xs hover:text-indigo-500 transition-colors duration-200 flex items-center"
                   >
-                    <span className="w-1 h-1 bg-pink-500 rounded-full mr-1.5"></span>
+                    <span className="w-1 h-1 bg-indigo-900 rounded-full mr-1.5"></span>
                     {item}
                   </a>
                 </li>
@@ -77,15 +77,15 @@ function Footer() {
 
           {/* Contact Section */}
           <div className="space-y-2">
-            <h3 className="text-sm font-semibold hover:text-pink-500 transition-colors duration-200 cursor-default">
+            <h3 className="text-sm font-semibold hover:text-indigo-900 transition-colors duration-200 cursor-default text-gray-100">
               CONTACT US
             </h3>
             <div className="space-y-1.5">
-              <p className="text-gray-600 text-xs flex items-center hover:text-gray-900 transition-colors duration-200">
+              <p className="text-gray-500 text-xs flex items-center hover:text-gray-300 transition-colors duration-200">
                 <FaPhone className="mr-1.5 text-xs" />
-                +254 (746)-968-441 
+                +254 (746)-968-441
               </p>
-              <p className="text-gray-600 text-xs flex items-center hover:text-gray-900 transition-colors duration-200">
+              <p className="text-gray-500 text-xs flex items-center hover:text-gray-300 transition-colors duration-200">
                 <FaEnvelope className="mr-1.5 text-xs" />
                 info@loreinedigital.com
               </p>
@@ -94,10 +94,10 @@ function Footer() {
 
           {/* Newsletter Section */}
           <div className="space-y-2">
-            <h3 className="text-sm font-semibold hover:text-pink-500 transition-colors duration-200 cursor-default">
+            <h3 className="text-sm font-semibold hover:text-indigo-900 transition-colors duration-200 cursor-default text-gray-100">
               NEWSLETTER
             </h3>
-            <p className="text-gray-600 text-xs hover:text-gray-900 transition-colors duration-200">
+            <p className="text-gray-500 text-xs hover:text-gray-300 transition-colors duration-200">
               Get the latest updates
             </p>
             <form onSubmit={sendEmail} className="space-y-1.5">
@@ -107,18 +107,18 @@ function Footer() {
                   placeholder="Your Email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="flex-1 text-xs px-2.5 py-1.5 rounded-l bg-white text-gray-800 focus:outline-none focus:ring-1 focus:ring-pink-500 border border-gray-300"
+                  className="flex-1 text-xs px-2.5 py-1.5 rounded-l bg-gray-800 text-gray-300 focus:outline-none focus:ring-1 focus:ring-indigo-900 border border-gray-700"
                   required
                 />
                 <button
                   type="submit"
-                  className="px-2.5 py-1.5 text-xs bg-pink-600 hover:bg-pink-700 text-white rounded-r transition-colors duration-200"
+                  className="px-2.5 py-1.5 text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded-r transition-colors duration-200"
                 >
                   Subscribe
                 </button>
               </div>
               {message && (
-                <p className={`text-2xs ${message.includes('success') ? 'text-green-600' : 'text-pink-600'}`}>
+                <p className={`text-2xs ${message.includes('success') ? 'text-green-500' : 'text-indigo-500'}`}>
                   {message}
                 </p>
               )}
@@ -133,7 +133,7 @@ function Footer() {
                 <a
                   key={index}
                   href="#"
-                  className="text-gray-600 hover:text-pink-500 transition-colors duration-200"
+                  className="text-gray-500 hover:text-indigo-500 transition-colors duration-200"
                   aria-label={social.label}
                 >
                   {social.icon}
@@ -144,7 +144,7 @@ function Footer() {
         </div>
 
         {/* Copyright Section */}
-        <div className="mt-6 pt-4 border-t border-gray-300 text-center text-gray-600 text-2xs">
+        <div className="mt-6 pt-4 border-t border-gray-700 text-center text-gray-500 text-2xs">
           &copy; {new Date().getFullYear()} LoreineDigital. All rights reserved.
         </div>
       </div>

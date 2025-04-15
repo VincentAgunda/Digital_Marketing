@@ -1,125 +1,148 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaLaptopCode, FaMobileAlt, FaPaintBrush, FaBullhorn, FaChevronDown } from "react-icons/fa";
 import emailjs from "@emailjs/browser";
 
-// Font setup
-const fontStyle = {
+// Constants
+const FONT_STYLE = {
   fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
   fontWeight: 300
 };
 
-// Animation variants
-const fadeIn = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1 },
-  exit: { opacity: 0 },
-  transition: { duration: 0.4, ease: "easeInOut" }
-};
-
-const slideUp = {
-  initial: { opacity: 0, y: 40 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] }
-};
-
-const scaleUp = {
-  initial: { opacity: 0, scale: 0.96 },
-  animate: { opacity: 1, scale: 1 },
-  transition: { duration: 0.5, ease: "easeOut" }
+const ANIMATION_VARIANTS = {
+  fadeIn: {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+    transition: { duration: 0.4, ease: "easeInOut" }
+  },
+  slideUp: {
+    initial: { opacity: 0, y: 40 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] }
+  },
+  scaleUp: {
+    initial: { opacity: 0, scale: 0.96 },
+    animate: { opacity: 1, scale: 1 },
+    transition: { duration: 0.5, ease: "easeOut" }
+  }
 };
 
 // Data
-const portfolioItems = [
-  { 
-    id: 1, 
-    title: "Quantum UI Framework", 
-    category: "Web Design", 
-    image: "camera1.webp",
+const PORTFOLIO_ITEMS = [
+  {
+    id: 1,
+    title: "Quantum UI Framework",
+    category: "Web Design",
+    image: "camera3.webp",
     excerpt: "Next-gen interface system leveraging quantum computing principles"
   },
-  { 
-    id: 2, 
-    title: "Neural Commerce App", 
-    category: "Mobile App", 
-    image: "camera1.webp",
+  {
+    id: 2,
+    title: "Neural Commerce App",
+    category: "Mobile App",
+    image: "default-blog1.webp",
     excerpt: "Thought-controlled shopping experience with biometric feedback"
   },
-  { 
-    id: 3, 
-    title: "Digital Branding", 
-    category: "Branding", 
-    image: "camera1.webp",
+  {
+    id: 3,
+    title: "Digital Branding",
+    category: "Branding",
+    image: "camera4.webp",
     excerpt: "3D identity system for spatial computing platforms"
   },
-  { 
-    id: 4, 
-    title: "AI Marketing Suite", 
-    category: "Marketing", 
+  {
+    id: 4,
+    title: "AI Marketing Suite",
+    category: "Marketing",
     image: "camera1.webp",
     excerpt: "Self-optimizing campaign system with predictive analytics"
   }
 ];
 
-const newsData = [
-  { 
-    title: 'The Future of UI/UX in 2025', 
-    date: 'Apr 10, 2025', 
-    image: 'camera1.webp', 
+const NEWS_DATA = [
+  {
+    title: 'The Future of UI/UX in 2025',
+    date: 'Apr 10, 2025',
+    image: 'camera1.webp',
     excerpt: "How neural interfaces are revolutionizing design paradigms"
   },
-  { 
-    title: 'Headless CMS Architecture', 
-    date: 'Mar 28, 2025', 
+  {
+    title: 'Headless CMS Architecture',
+    date: 'Mar 28, 2025',
     image: 'camera1.webp',
     excerpt: "Building ultra-fast content systems with quantum caching"
   },
-  { 
-    title: 'AI in Web Development', 
-    date: 'Mar 15, 2025', 
+  {
+    title: 'AI in Web Development',
+    date: 'Mar 15, 2025',
     image: 'camera1.webp',
     excerpt: "How GPT-5 is automating 80% of frontend development"
   }
 ];
 
-const faqData = [
-  { 
-    q: "What services do you offer?", 
-    a: "We specialize in quantum web design, neural interface development, holographic branding, and AI-powered marketing systems. Our solutions blend cutting-edge technology with intuitive design." 
+const FAQ_DATA = [
+  {
+    q: "What services do you offer?",
+    a: "We specialize in quantum web design, neural interface development, holographic branding, and AI-powered marketing systems."
   },
-  { 
-    q: "What makes your approach unique?", 
-    a: "We combine quantum computing principles with neural design patterns to create interfaces that adapt to users' cognitive states in real-time, reducing cognitive load by up to 60%." 
+  {
+    q: "What makes your approach unique?",
+    a: "We combine quantum computing principles with neural design patterns to create interfaces that adapt to users' cognitive states in real-time."
   }
 ];
 
 const Home = () => {
+  // State
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({ 
-    name: "", 
-    email: "", 
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
     project: "",
     budget: ""
   });
   const [message, setMessage] = useState("");
   const [activeFAQ, setActiveFAQ] = useState(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  
+  // Refs
   const formRef = useRef();
+  const newsContainerRef = useRef();
+  const animationFrameRef = useRef();
 
-  // Mouse position tracker for parallax effects
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+  // Memoized data
+  const memoizedPortfolioItems = useMemo(() => PORTFOLIO_ITEMS, []);
+  const memoizedNewsData = useMemo(() => NEWS_DATA, []);
+  const memoizedFaqData = useMemo(() => FAQ_DATA, []);
+
+  // Event handlers
+  const handleMouseMove = useCallback((e) => {
+    setMousePosition({ x: e.clientX, y: e.clientY });
   }, []);
 
-  // Email sending function
-  const sendEmail = async (e) => {
+  const handleFormChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  }, []);
+
+  const toggleFAQ = useCallback((index) => {
+    setActiveFAQ(prev => prev === index ? null : index);
+  }, []);
+
+  // Effects
+  useEffect(() => {
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      cancelAnimationFrame(animationFrameRef.current);
+    };
+  }, [handleMouseMove]);
+
+  // Email sending
+  const sendEmail = useCallback(async (e) => {
     e.preventDefault();
     setMessage("Sending...");
-    
+   
     try {
       await emailjs.sendForm(
         process.env.REACT_APP_EMAILJS_SERVICE_ID,
@@ -132,98 +155,56 @@ const Home = () => {
     } catch (error) {
       setMessage("Failed to send. Please try again or contact us directly.");
     }
-  };
+  }, []);
 
-  // Parallax effect generator
-  const getParallaxStyle = (intensity) => ({
+  // Parallax effect
+  const getParallaxStyle = useCallback((intensity) => ({
     transform: `translate(
       ${(mousePosition.x - window.innerWidth/2) / (50 / intensity)}px,
       ${(mousePosition.y - window.innerHeight/2) / (50 / intensity)}px
     )`,
     transition: "transform 0.1s linear"
-  });
+  }), [mousePosition.x, mousePosition.y]);
 
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="min-h-screen bg-gray-950 text-gray-100 overflow-x-hidden"
-      style={fontStyle}
-    >
-{/* Holographic background elements */}
-<div className="fixed inset-0 pointer-events-none">
-  <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjAyKSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3QgZmlsbD0idXJsKCNwYXR0ZXJuKSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIvPjwvc3ZnPg==')] opacity-5"></div>
-  <div 
-    className="absolute inset-0 opacity-20"
-    style={{
-      background: `radial-gradient(circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(34, 211, 238, 0.1) 0%, transparent 70%)`
-    }}
-  ></div>
-</div>
+  // News animation
+  useEffect(() => {
+    if (!newsContainerRef.current) return;
 
-{/* Compact Hero Section */}
-<section className="relative py-20 flex items-center px-6 md:px-12 lg:px-24 overflow-hidden">
-  {/* Background image with opacity */}
-  <div className="absolute inset-0">
-    <img 
-      src="camera1.webp" 
-      alt="Mountain background"
-      className="w-full h-3/4 object-cover"
-    />
-    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
-  </div>
-  
-  <div className="relative z-10 max-w-6xl mx-auto grid md:grid-cols-2 gap-8 items-center">
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-    >
-      <h1 className="text-3xl sm:text-4xl md:text-5xl font-light leading-tight mb-4">
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">At Nesture Digital</span> <br />
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">we craft</span> more<br />
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">than just interfaces</span>
-      </h1>
-      <p className="text-lg text-gray-300 mb-6 max-w-md">
-        We create adaptive interfaces that blend AI, quantum principles, and neural design for unparalleled user experiences.
-      </p>
-      <div className="flex flex-wrap gap-3">
-        <motion.button
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={() => setShowModal(true)}
-          className="px-6 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-lg text-white font-medium"
-        >
-          Start Project
-        </motion.button>
-        <motion.a
-          href="#work"
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.98 }}
-          className="px-6 py-2 border border-gray-600 rounded-lg text-white font-medium hover:border-cyan-400 transition-colors"
-        >
-          View Work
-        </motion.a>
-      </div>
-    </motion.div>
+    const container = newsContainerRef.current;
+    const content = container.firstChild;
+    let position = 0;
+    const speed = 0.5;
 
+    const animate = () => {
+      position -= speed;
+      if (position <= -content.offsetWidth / 2) {
+        position = 0;
+      }
+      content.style.transform = `translateX(${position}px)`;
+      animationFrameRef.current = requestAnimationFrame(animate);
+    };
+
+    animationFrameRef.current = requestAnimationFrame(animate);
+
+    return () => cancelAnimationFrame(animationFrameRef.current);
+  }, []);
+
+  // Components
+  const MobileMockup = useMemo(() => () => (
     <motion.div
       className="relative"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: 0.2, duration: 0.5 }}
     >
-      {/* Compact mobile device mockup */}
       <div className="relative mx-auto w-full max-w-[240px] md:max-w-[280px] aspect-[9/19] bg-gray-900 rounded-[30px] overflow-hidden border-6 border-gray-800 shadow-xl p-0.5">
         <div className="relative w-full h-full overflow-hidden">
-          <img 
-            src="camera1.webp" 
+          <img
+            src="camera1.webp"
             alt="App interface"
             className="w-full h-full object-cover"
+            loading="lazy"
           />
-          
-          {/* Status bar */}
           <div className="absolute top-0 left-0 right-0 h-8 bg-black/50 backdrop-blur-sm flex items-center justify-between px-3 text-white text-[10px]">
             <span>9:41</span>
             <div className="flex space-x-1">
@@ -238,8 +219,6 @@ const Home = () => {
               </svg>
             </div>
           </div>
-          
-          {/* Adventure UI elements */}
           <div className="absolute top-12 right-3 bg-blue-600/90 text-white px-2 py-1 rounded-full text-xs font-medium">
             Tech Ready
           </div>
@@ -247,125 +226,246 @@ const Home = () => {
             <span className="text-xl font-bold">21i</span>
             <span className="block text-[10px]">Track</span>
           </div>
-          
-          {/* Navigation bar */}
           <div className="absolute bottom-0 left-0 right-0 h-12 bg-black/50 backdrop-blur-sm flex items-center justify-around">
             <div className="w-5 h-5 rounded-full bg-blue-500"></div>
             <div className="w-5 h-5 rounded-full bg-gray-600"></div>
             <div className="w-5 h-5 rounded-full bg-gray-600"></div>
           </div>
-          
           <div className="absolute inset-0 bg-gradient-to-t from-gray-950/70 via-transparent to-transparent"></div>
         </div>
       </div>
-      
       <div className="absolute -bottom-4 -left-4 w-24 h-24 rounded-full bg-blue-600/20 blur-xl"></div>
     </motion.div>
-  </div>
-</section>
+  ), []);
+
+  const PortfolioItem = useCallback(({ item }) => (
+    <motion.div
+      className="group relative overflow-hidden rounded-md border border-gray-800/40 hover:border-cyan-400/15 transition-all duration-250 bg-gray-900/30 backdrop-blur-xs"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-60px" }}
+    >
+      <div className="aspect-video overflow-hidden relative">
+        <img
+          src={item.image}
+          alt={item.title}
+          className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-400"
+          loading="lazy"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-950/70 via-gray-950/20 to-transparent" />
+      </div>
+      <div className="p-4">
+        <h3 className="text-base font-medium mb-1">{item.title}</h3>
+        <p className="text-cyan-400 text-2xs mb-1.5">{item.category}</p>
+        <p className="text-gray-400 text-2xs">{item.excerpt}</p>
+      </div>
+    </motion.div>
+  ), []);
+
+  const NewsItem = useCallback(({ item }) => (
+    <div className="min-w-[300px] max-w-sm group">
+      <div className="aspect-video rounded-xl overflow-hidden mb-4 relative">
+        <img
+          src={item.image}
+          alt={item.title}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          loading="lazy"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-950/50 via-transparent to-transparent" />
+      </div>
+      <p className="text-gray-500 text-sm mb-2">{item.date}</p>
+      <h3 className="text-xl font-medium mb-2 group-hover:text-cyan-400 transition-colors">
+        {item.title}
+      </h3>
+      <p className="text-gray-400 text-sm mb-3">{item.excerpt}</p>
+      <a href="#" className="text-cyan-400 text-sm hover:text-white transition-colors">
+        Read More →
+      </a>
+    </div>
+  ), []);
+
+  const FAQItem = useCallback(({ item, index, isActive, onClick }) => (
+    <motion.div
+      className="border-b border-gray-800 pb-4"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ delay: index * 0.1, duration: 0.6 }}
+    >
+      <button
+        className="flex justify-between items-center w-full text-left py-4"
+        onClick={() => onClick(index)}
+      >
+        <h3 className="text-lg font-medium">{item.q}</h3>
+        <div className={`transition-transform ${isActive ? 'rotate-180' : ''}`}>
+          <FaChevronDown className="text-cyan-400" />
+        </div>
+      </button>
+      <AnimatePresence>
+        {isActive && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <p className="text-gray-400 pb-4">{item.a}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  ), []);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="min-h-screen bg-gray-950 text-gray-100 overflow-x-hidden"
+      style={FONT_STYLE}
+    >
+      {/* Background elements */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,...')] opacity-5"></div>
+        <div
+          className="absolute inset-0 opacity-15"
+          style={{
+            background: `radial-gradient(circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(34, 211, 238, 0.08) 0%, transparent 70%)`
+          }}
+        ></div>
+      </div>
+
+      {/* Hero Section */}
+      <section className="relative py-24 px-6 md:px-16 lg:px-32 overflow-hidden text-white">
+        <div className="absolute inset-0">
+          <img
+            src="camera1.webp"
+            alt="Background"
+            className="w-full h-full object-cover"
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        </div>
+
+        <div className="relative z-10 max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+          >
+            <h1 className="text-4xl md:text-5xl font-semibold leading-tight mb-5">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Nexture Digital</span><br />
+              Designing <span className="text-indigo-400">futuristic</span> experiences
+            </h1>
+            <p className="text-gray-300 text-base md:text-lg max-w-md mb-6">
+              We blend AI, neural UX, and modern tech into sleek adaptive interfaces.
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => setShowModal(true)}
+                className="px-5 py-2.5 bg-cyan-600 hover:bg-cyan-700 rounded-lg text-sm font-medium shadow-md transition"
+              >
+                Start Project
+              </motion.button>
+              <motion.a
+                href="#work"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="px-5 py-2.5 border border-gray-600 hover:border-cyan-500 rounded-lg text-sm font-medium transition"
+              >
+                View Work
+              </motion.a>
+            </div>
+          </motion.div>
+
+          <MobileMockup />
+        </div>
+      </section>
 
       {/* Portfolio Section */}
-      <section id="work" className="py-20 px-6 bg-gray-950/50 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto">
+      <section id="work" className="py-12 px-4 bg-gray-950/80 backdrop-blur-sm">
+        <div className="max-w-5xl mx-auto">
           <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 20 }}
+            className="text-center mb-10"
+            initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: "-60px" }}
           >
-            <h2 className="text-3xl md:text-4xl font-light mb-4">
+            <h2 className="text-xl md:text-4xl font-light mb-4">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Selected</span> Works
             </h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">
+            <p className="text-gray-400 max-w-lg mx-auto text-xl">
               Explore our groundbreaking projects that redefine digital interaction paradigms.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {portfolioItems.map((item, index) => (
-              <motion.div
-                key={item.id}
-                className="group relative overflow-hidden rounded-xl border border-gray-800 hover:border-cyan-400/30 transition-all duration-300"
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ delay: index * 0.15, duration: 0.6 }}
-              >
-                <div className="aspect-video overflow-hidden relative">
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-transparent to-transparent"></div>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-medium mb-1">{item.title}</h3>
-                  <p className="text-cyan-400 text-sm mb-3">{item.category}</p>
-                  <p className="text-gray-400 text-sm">{item.excerpt}</p>
-                </div>
-              </motion.div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {memoizedPortfolioItems.map((item) => (
+              <PortfolioItem key={item.id} item={item} />
             ))}
           </div>
         </div>
       </section>
 
       {/* Services Section */}
-      <section className="py-20 px-6 bg-gray-900/50">
-        <div className="max-w-5xl mx-auto">
+      <section className="py-12 px-4 bg-gray-900 backdrop-blur-sm">
+        <div className="max-w-4xl mx-auto">
           <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 20 }}
+            className="text-center mb-10"
+            initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: "-60px" }}
           >
-            <h2 className="text-3xl md:text-4xl font-light mb-4">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Specialized</span> Services
+            <h2 className="text-xl md:text-2xl font-light mb-2 text-[#ECF2F0]">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8BA89A] to-[#C7CFCA]">Specialized</span> Services
             </h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">
+            <p className="text-[#C7CFCA] max-w-lg mx-auto text-xs">
               Our offerings blend cutting-edge technology with intuitive design principles.
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-3">
             <motion.div
-              className="bg-gray-900/50 p-6 rounded-xl border border-gray-800 hover:border-cyan-400/30 transition-colors"
-              initial={{ opacity: 0, y: 20 }}
+              className="bg-gray-800 p-4 rounded-md border border-gray-700 hover:border-[#8BA89A] transition-colors"
+              initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ delay: 0.1, duration: 0.6 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ delay: 0.08, duration: 0.4 }}
             >
-              <div className="text-cyan-400 text-2xl mb-4"><FaLaptopCode /></div>
-              <h3 className="text-xl font-medium mb-2">Quantum Web Design</h3>
-              <p className="text-gray-400 text-sm">
+              <div className="text-[#8BA89A] text-lg mb-2"><FaLaptopCode /></div>
+              <h3 className="text-base font-medium mb-1 text-[#ECF2F0]">Quantum Web Design</h3>
+              <p className="text-[#C7CFCA] text-2xs">
                 Websites that leverage quantum principles for adaptive layouts and predictive interfaces.
               </p>
             </motion.div>
 
             <motion.div
-              className="bg-gray-900/50 p-6 rounded-xl border border-gray-800 hover:border-cyan-400/30 transition-colors"
-              initial={{ opacity: 0, y: 20 }}
+              className="bg-gray-800 p-4 rounded-md border border-gray-700 hover:border-[#8BA89A] transition-colors"
+              initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ delay: 0.2, duration: 0.6 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ delay: 0.16, duration: 0.4 }}
             >
-              <div className="text-cyan-400 text-2xl mb-4"><FaMobileAlt /></div>
-              <h3 className="text-xl font-medium mb-2">Neural Mobile Apps</h3>
-              <p className="text-gray-400 text-sm">
+              <div className="text-[#8BA89A] text-lg mb-2"><FaMobileAlt /></div>
+              <h3 className="text-base font-medium mb-1 text-[#ECF2F0]">Neural Mobile Apps</h3>
+              <p className="text-[#C7CFCA] text-2xs">
                 Thought-controlled applications with biometric feedback and cognitive load optimization.
               </p>
             </motion.div>
 
             <motion.div
-              className="bg-gray-900/50 p-6 rounded-xl border border-gray-800 hover:border-cyan-400/30 transition-colors"
-              initial={{ opacity: 0, y: 20 }}
+              className="bg-gray-800 p-4 rounded-md border border-gray-700 hover:border-[#8BA89A] transition-colors"
+              initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ delay: 0.3, duration: 0.6 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ delay: 0.24, duration: 0.4 }}
             >
-              <div className="text-cyan-400 text-2xl mb-4"><FaPaintBrush /></div>
-              <h3 className="text-xl font-medium mb-2">Motion Design</h3>
-              <p className="text-gray-400 text-sm">
+              <div className="text-[#8BA89A] text-lg mb-2"><FaPaintBrush /></div>
+              <h3 className="text-base font-medium mb-1 text-[#ECF2F0]">Motion Design</h3>
+              <p className="text-[#C7CFCA] text-2xs">
                 Engaging animations and micro-interactions.
               </p>
             </motion.div>
@@ -374,7 +474,7 @@ const Home = () => {
       </section>
 
       {/* News Section */}
-      <section className="py-20 px-6">
+      <section className="py-20 px-6 overflow-hidden">
         <div className="max-w-6xl mx-auto">
           <motion.div
             className="flex justify-between items-end mb-12"
@@ -393,34 +493,12 @@ const Home = () => {
             </a>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {newsData.map((item, index) => (
-              <motion.div
-                key={index}
-                className="group"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ delay: index * 0.15, duration: 0.6 }}
-              >
-                <div className="aspect-video rounded-xl overflow-hidden mb-4 relative">
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-gray-950/50 via-transparent to-transparent"></div>
-                </div>
-                <p className="text-gray-500 text-sm mb-2">{item.date}</p>
-                <h3 className="text-xl font-medium mb-2 group-hover:text-cyan-400 transition-colors">
-                  {item.title}
-                </h3>
-                <p className="text-gray-400 text-sm mb-3">{item.excerpt}</p>
-                <a href="#" className="text-cyan-400 text-sm hover:text-white transition-colors">
-                  Read More →
-                </a>
-              </motion.div>
-            ))}
+          <div className="relative w-full overflow-hidden" ref={newsContainerRef}>
+            <div className="flex gap-8 w-max">
+              {memoizedNewsData.map((item, index) => (
+                <NewsItem key={index} item={item} />
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -441,38 +519,14 @@ const Home = () => {
           </motion.div>
 
           <div className="space-y-4">
-            {faqData.map((item, index) => (
-              <motion.div
-                key={index}
-                className="border-b border-gray-800 pb-4"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ delay: index * 0.1, duration: 0.6 }}
-              >
-                <button
-                  className="flex justify-between items-center w-full text-left py-4"
-                  onClick={() => setActiveFAQ(activeFAQ === index ? null : index)}
-                >
-                  <h3 className="text-lg font-medium">{item.q}</h3>
-                  <div className={`transition-transform ${activeFAQ === index ? 'rotate-180' : ''}`}>
-                    <FaChevronDown className="text-cyan-400" />
-                  </div>
-                </button>
-                <AnimatePresence>
-                  {activeFAQ === index && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="overflow-hidden"
-                    >
-                      <p className="text-gray-400 pb-4">{item.a}</p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
+            {memoizedFaqData.map((item, index) => (
+              <FAQItem 
+                key={index} 
+                item={item} 
+                index={index}
+                isActive={activeFAQ === index}
+                onClick={toggleFAQ}
+              />
             ))}
           </div>
         </div>
@@ -491,7 +545,7 @@ const Home = () => {
               className="absolute inset-0 bg-black/80 backdrop-blur-sm"
               onClick={() => setShowModal(false)}
             ></div>
-            
+          
             <motion.div
               className="relative bg-gray-900 rounded-xl border border-gray-800 shadow-2xl w-full max-w-md p-6"
               initial={{ scale: 0.95, opacity: 0 }}
@@ -519,7 +573,7 @@ const Home = () => {
                     type="text"
                     name="name"
                     value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    onChange={handleFormChange}
                     className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 outline-none transition"
                     required
                   />
@@ -531,7 +585,7 @@ const Home = () => {
                     type="email"
                     name="email"
                     value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    onChange={handleFormChange}
                     className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 outline-none transition"
                     required
                   />
@@ -542,7 +596,7 @@ const Home = () => {
                   <textarea
                     name="project"
                     value={formData.project}
-                    onChange={(e) => setFormData({...formData, project: e.target.value})}
+                    onChange={handleFormChange}
                     rows="3"
                     className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 outline-none transition"
                     required
@@ -554,7 +608,7 @@ const Home = () => {
                   <select
                     name="budget"
                     value={formData.budget}
-                    onChange={(e) => setFormData({...formData, budget: e.target.value})}
+                    onChange={handleFormChange}
                     className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 outline-none appearance-none"
                     required
                   >
@@ -567,8 +621,8 @@ const Home = () => {
 
                 {message && (
                   <div className={`text-sm py-2 px-3 rounded-lg ${
-                    message.includes("sent") ? "bg-green-900/50 text-green-400" : 
-                    message.includes("Sending") ? "bg-blue-900/50 text-blue-400" : 
+                    message.includes("sent") ? "bg-green-900/50 text-green-400" :
+                    message.includes("Sending") ? "bg-blue-900/50 text-blue-400" :
                     "bg-red-900/50 text-red-400"
                   }`}>
                     {message}

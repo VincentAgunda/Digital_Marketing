@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaCheck, FaTimes, FaChevronDown } from "react-icons/fa";
+import { FaCheck, FaChevronDown } from "react-icons/fa";
 import emailjs from "@emailjs/browser";
 
 // Font setup
@@ -9,24 +9,33 @@ const fontStyle = {
   fontWeight: 300
 };
 
-// Animation variants
-const fadeIn = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1 },
-  exit: { opacity: 0 },
-  transition: { duration: 0.4, ease: "easeInOut" }
-};
-
-const slideUp = {
-  initial: { opacity: 0, y: 40 },
+// Animation variants (More expressive animation variants)
+const fadeInSlideUp = {
+  initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0 },
   transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] }
 };
 
-const scaleUp = {
-  initial: { opacity: 0, scale: 0.96 },
+const fadeInScale = {
+  initial: { opacity: 0, scale: 0.9 },
   animate: { opacity: 1, scale: 1 },
+  exit: { opacity: 0 },
   transition: { duration: 0.5, ease: "easeOut" }
+};
+
+const slideInLeft = {
+  initial: { opacity: 0, x: -20 },
+  animate: { opacity: 1, x: 0 },
+  exit: { opacity: 0 },
+  transition: { duration: 0.5, ease: "easeInOut" }
+};
+
+const slideInRight = {
+  initial: { opacity: 0, x: 20 },
+  animate: { opacity: 1, x: 0 },
+  exit: { opacity: 0 },
+  transition: { duration: 0.5, ease: "easeInOut" }
 };
 
 // Data
@@ -77,29 +86,29 @@ const pricingTiers = [
 ];
 
 const faqData = [
-  { 
-    q: "What payment methods do you accept?", 
-    a: "We accept quantum crypto transfers, neural credit, and all major digital currencies." 
+  {
+    q: "What payment methods do you accept?",
+    a: "We accept quantum crypto transfers, neural credit, and all major digital currencies."
   },
-  { 
-    q: "Is there a free trial?", 
-    a: "Yes, we offer a 7-day quantum trial with full access to our neural network." 
+  {
+    q: "Is there a free trial?",
+    a: "Yes, we offer a 7-day quantum trial with full access to our neural network."
   },
-  { 
-    q: "Can I upgrade my plan later?", 
-    a: "Absolutely! Your quantum nodes will adapt seamlessly to your new plan." 
+  {
+    q: "Can I upgrade my plan later?",
+    a: "Absolutely! Your quantum nodes will adapt seamlessly to your new plan."
   },
-  { 
-    q: "How does quantum storage work?", 
-    a: "Our storage uses quantum entanglement principles for instant access across dimensions." 
+  {
+    q: "How does quantum storage work?",
+    a: "Our storage uses quantum entanglement principles for instant access across dimensions."
   }
 ];
 
 const Home = () => {
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({ 
-    name: "", 
-    email: "", 
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
     plan: "",
     message: ""
   });
@@ -121,7 +130,7 @@ const Home = () => {
   const sendEmail = async (e) => {
     e.preventDefault();
     setMessage("Sending through quantum link...");
-    
+
     try {
       await emailjs.sendForm(
         process.env.REACT_APP_EMAILJS_SERVICE_ID,
@@ -136,15 +145,6 @@ const Home = () => {
     }
   };
 
-  // Parallax effect generator
-  const getParallaxStyle = (intensity) => ({
-    transform: `translate(
-      ${(mousePosition.x - window.innerWidth/2) / (50 / intensity)}px,
-      ${(mousePosition.y - window.innerHeight/2) / (50 / intensity)}px
-    )`,
-    transition: "transform 0.1s linear"
-  });
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -156,7 +156,7 @@ const Home = () => {
       {/* Holographic background elements */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjAyKSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3QgZmlsbD0idXJsKCNwYXR0ZXJuKSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIvPjwvc3ZnPg==')] opacity-5"></div>
-        <div 
+        <div
           className="absolute inset-0 opacity-20"
           style={{
             background: `radial-gradient(circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(34, 211, 238, 0.1) 0%, transparent 70%)`
@@ -167,20 +167,22 @@ const Home = () => {
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center px-6 md:px-12 lg:px-24 pt-24 pb-12 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/30 via-gray-950 to-black z-0"></div>
-        
+
         <div className="relative z-10 max-w-6xl mx-auto text-center">
           <motion.h1
             className="text-4xl sm:text-5xl md:text-6xl font-light leading-tight mb-6"
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
+            variants={fadeInSlideUp}
+            initial="initial"
+            animate="animate"
             transition={{ duration: 0.8 }}
           >
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Quantum</span> Pricing
           </motion.h1>
           <motion.p
             className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            variants={fadeInSlideUp}
+            initial="initial"
+            animate="animate"
             transition={{ delay: 0.2, duration: 0.6 }}
           >
             Experience the future with our cutting-edge quantum solutions
@@ -190,8 +192,9 @@ const Home = () => {
             whileTap={{ scale: 0.98 }}
             onClick={() => setShowModal(true)}
             className="px-8 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-lg text-white font-medium"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            variants={fadeInScale}
+            initial="initial"
+            animate="animate"
             transition={{ delay: 0.4, duration: 0.6 }}
           >
             Request Quantum Demo
@@ -213,12 +216,24 @@ const Home = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
           >
-            <h2 className="text-3xl md:text-4xl font-light mb-4">
+            <motion.h2
+              className="text-3xl md:text-4xl font-light mb-4"
+              variants={fadeInSlideUp}
+              initial="initial"
+              animate="animate"
+              transition={{ duration: 0.6 }}
+            >
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Quantum</span> Plans
-            </h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">
+            </motion.h2>
+            <motion.p
+              className="text-gray-400 max-w-2xl mx-auto"
+              variants={fadeInSlideUp}
+              initial="initial"
+              animate="animate"
+              transition={{ delay: 0.2, duration: 0.6 }}
+            >
               Choose the quantum frequency that resonates with your needs
-            </p>
+            </motion.p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -237,23 +252,48 @@ const Home = () => {
                   </div>
                 )}
                 <div className="p-6">
-                  <h3 className="text-xl font-medium mb-2">{plan.name}</h3>
+                  <motion.h3
+                    className="text-xl font-medium mb-2"
+                    variants={slideInLeft}
+                    initial="initial"
+                    animate="animate"
+                    transition={{ duration: 0.4 }}
+                  >{plan.name}</motion.h3>
                   <div className="mb-6">
-                    <span className="text-4xl font-bold bg-gradient-to-r bg-clip-text text-transparent ${plan.color}">
+                    <motion.span
+                      className={`text-4xl font-bold bg-gradient-to-r bg-clip-text text-transparent ${plan.color}`}
+                      variants={fadeInScale}
+                      initial="initial"
+                      animate="animate"
+                      transition={{ duration: 0.5 }}
+                    >
                       ${plan.price}
-                    </span>
-                    <span className="text-gray-400">/quantum cycle</span>
+                    </motion.span>
+                    <motion.span
+                      className="text-gray-400"
+                      variants={slideInRight}
+                      initial="initial"
+                      animate="animate"
+                      transition={{ duration: 0.4 }}
+                    >/quantum cycle</motion.span>
                   </div>
                   <ul className="space-y-3 mb-8">
                     {plan.features.map((feature, index) => (
-                      <li key={index} className="flex items-start">
+                      <motion.li
+                        key={index}
+                        className="flex items-start"
+                        variants={fadeInSlideUp}
+                        initial="initial"
+                        animate="animate"
+                        transition={{ delay: 0.2 + index * 0.05, duration: 0.5 }}
+                      >
                         <div className="flex-shrink-0 mt-1">
                           <div className="w-5 h-5 rounded-full bg-gradient-to-r from-green-400 to-teal-500 flex items-center justify-center">
                             <FaCheck className="text-white text-xs" />
                           </div>
                         </div>
                         <span className="ml-3 text-gray-300">{feature}</span>
-                      </li>
+                      </motion.li>
                     ))}
                   </ul>
                   <motion.button
@@ -261,6 +301,10 @@ const Home = () => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setShowModal(true)}
+                    variants={fadeInScale}
+                    initial="initial"
+                    animate="animate"
+                    transition={{ delay: 0.1, duration: 0.5 }}
                   >
                     Quantum Entanglement
                   </motion.button>
@@ -280,10 +324,24 @@ const Home = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
           >
-            <h2 className="text-3xl md:text-4xl font-light mb-4">
+            <motion.h2
+              className="text-3xl md:text-4xl font-light mb-4"
+              variants={fadeInSlideUp}
+              initial="initial"
+              animate="animate"
+              transition={{ duration: 0.6 }}
+            >
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Quantum</span> Inquiries
-            </h2>
-            <p className="text-gray-400">Answers to your interdimensional questions</p>
+            </motion.h2>
+            <motion.p
+              className="text-gray-400"
+              variants={fadeInSlideUp}
+              initial="initial"
+              animate="animate"
+              transition={{ delay: 0.2, duration: 0.6 }}
+            >
+              Answers to your interdimensional questions
+            </motion.p>
           </motion.div>
 
           <div className="space-y-4">
@@ -296,15 +354,19 @@ const Home = () => {
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ delay: index * 0.1, duration: 0.6 }}
               >
-                <button
+                <motion.button
                   className="flex justify-between items-center w-full text-left py-4"
                   onClick={() => setActiveFAQ(activeFAQ === index ? null : index)}
+                  variants={slideInLeft}
+                  initial="initial"
+                  animate="animate"
+                  transition={{ duration: 0.4 }}
                 >
                   <h3 className="text-lg font-medium">{faq.q}</h3>
                   <div className={`transition-transform ${activeFAQ === index ? 'rotate-180' : ''}`}>
                     <FaChevronDown className="text-cyan-400" />
                   </div>
-                </button>
+                </motion.button>
                 <AnimatePresence>
                   {activeFAQ === index && (
                     <motion.div
@@ -313,6 +375,8 @@ const Home = () => {
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.3 }}
                       className="overflow-hidden"
+                      variants={fadeInSlideUp}
+                     
                     >
                       <p className="text-gray-400 pb-4">{faq.a}</p>
                     </motion.div>
@@ -333,17 +397,33 @@ const Home = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
           >
-            <h2 className="text-2xl md:text-3xl font-light mb-4">
-              Ready to <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">quantum leap</span> your business?
-            </h2>
-            <p className="text-gray-400 mb-8 max-w-2xl mx-auto">
+            <motion.h2
+              className="text-2xl md:text-3xl font-light mb-4"
+              variants={fadeInSlideUp}
+              initial="initial"
+              animate="animate"
+              transition={{ duration: 0.6 }}
+            >
+              Ready to <motion.span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">quantum leap</motion.span> your business?
+            </motion.h2>
+            <motion.p
+              className="text-gray-400 mb-8 max-w-2xl mx-auto"
+              variants={fadeInSlideUp}
+              initial="initial"
+              animate="animate"
+              transition={{ delay: 0.2, duration: 0.6 }}
+            >
               Our quantum specialists are standing by to entangle with your needs.
-            </p>
+            </motion.p>
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setShowModal(true)}
               className="px-8 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-lg text-white font-medium"
+              variants={fadeInScale}
+              initial="initial"
+              animate="animate"
+              transition={{ delay: 0.4, duration: 0.6 }}
             >
               Initiate Quantum Link
             </motion.button>
@@ -364,7 +444,7 @@ const Home = () => {
               className="absolute inset-0 bg-black/80 backdrop-blur-sm"
               onClick={() => setShowModal(false)}
             ></div>
-            
+
             <motion.div
               className="relative bg-gray-900 rounded-xl border border-gray-800 shadow-2xl w-full max-w-md p-6"
               initial={{ scale: 0.95, opacity: 0 }}
@@ -381,12 +461,18 @@ const Home = () => {
                 </svg>
               </button>
 
-              <h3 className="text-2xl font-light mb-6">
+              <motion.h3
+                className="text-2xl font-light mb-6"
+                variants={fadeInSlideUp}
+                initial="initial"
+                animate="animate"
+                transition={{ duration: 0.5 }}
+              >
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Quantum</span> Inquiry
-              </h3>
+              </motion.h3>
 
               <form ref={formRef} onSubmit={sendEmail} className="space-y-4">
-                <div>
+                <motion.div variants={slideInRight} initial="initial" animate="animate" transition={{ duration: 0.3 }}>
                   <label className="block text-sm text-gray-400 mb-1">Your Name</label>
                   <input
                     type="text"
@@ -396,9 +482,9 @@ const Home = () => {
                     className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 outline-none transition"
                     required
                   />
-                </div>
+                </motion.div>
 
-                <div>
+                <motion.div variants={slideInLeft} initial="initial" animate="animate" transition={{ duration: 0.3, delay: 0.1 }}>
                   <label className="block text-sm text-gray-400 mb-1">Email Address</label>
                   <input
                     type="email"
@@ -408,9 +494,9 @@ const Home = () => {
                     className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 outline-none transition"
                     required
                   />
-                </div>
+                </motion.div>
 
-                <div>
+                <motion.div variants={slideInRight} initial="initial" animate="animate" transition={{ duration: 0.3, delay: 0.2 }}>
                   <label className="block text-sm text-gray-400 mb-1">Plan Interest</label>
                   <select
                     name="plan"
@@ -425,9 +511,9 @@ const Home = () => {
                     <option value="Quantum Enterprise">Quantum Enterprise</option>
                     <option value="Custom Solution">Custom Quantum Solution</option>
                   </select>
-                </div>
+                </motion.div>
 
-                <div>
+                <motion.div variants={slideInLeft} initial="initial" animate="animate" transition={{ duration: 0.3, delay: 0.3 }}>
                   <label className="block text-sm text-gray-400 mb-1">Your Quantum Needs</label>
                   <textarea
                     name="message"
@@ -437,25 +523,35 @@ const Home = () => {
                     className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 outline-none transition"
                     required
                   ></textarea>
-                </div>
+                </motion.div>
 
                 {message && (
-                  <div className={`text-sm py-2 px-3 rounded-lg ${
-                    message.includes("successfully") ? "bg-green-900/50 text-green-400" : 
-                    message.includes("Sending") ? "bg-blue-900/50 text-blue-400" : 
-                    "bg-red-900/50 text-red-400"
-                  }`}>
+                  <motion.div
+                    className={`text-sm py-2 px-3 rounded-lg ${
+                      message.includes("successfully") ? "bg-green-900/50 text-green-400" :
+                      message.includes("Sending") ? "bg-blue-900/50 text-blue-400" :
+                      "bg-red-900/50 text-red-400"
+                    }`}
+                    variants={fadeInScale}
+                    initial="initial"
+                    animate="animate"
+                    transition={{ delay: 0.4, duration: 0.3 }}
+                  >
                     {message}
-                  </div>
+                  </motion.div>
                 )}
 
-                <button
+                <motion.button
                   type="submit"
                   className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:from-cyan-500 hover:to-blue-500 transition-all disabled:opacity-50"
                   disabled={message === "Sending through quantum link..."}
+                  variants={fadeInScale}
+                  initial="initial"
+                  animate="animate"
+                  transition={{ delay: 0.5, duration: 0.3 }}
                 >
                   {message === "Sending through quantum link..." ? "Entangling..." : "Initiate Quantum Link"}
-                </button>
+                </motion.button>
               </form>
             </motion.div>
           </motion.div>
