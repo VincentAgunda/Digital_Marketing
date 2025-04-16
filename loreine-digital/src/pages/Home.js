@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo, createContext, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaLaptopCode, FaMobileAlt, FaPaintBrush, FaBullhorn, FaChevronDown } from "react-icons/fa";
+import { FaLaptopCode, FaMobileAlt, FaBullhorn, FaChevronDown, FaPaintBrush } from "react-icons/fa";
+import { FiArrowRight, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import emailjs from "@emailjs/browser";
 
 // Theme Context
@@ -10,7 +11,7 @@ export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState('dark');
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') || 
+    const savedTheme = localStorage.getItem('theme') ||
       (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     setTheme(savedTheme);
   }, []);
@@ -104,12 +105,27 @@ const PORTFOLIO_ITEMS = [
     excerpt: "3D identity system for spatial computing platforms"
   },
   {
+    id: 3,
+    title: "Digital Branding",
+    category: "Branding",
+    image: "camera4.webp",
+    excerpt: "3D identity system for spatial computing platforms"
+  },
+  {
+    id: 3,
+    title: "Digital Branding",
+    category: "Branding",
+    image: "camera4.webp",
+    excerpt: "3D identity system for spatial computing platforms"
+  },
+  {
     id: 4,
     title: "AI Marketing Suite",
     category: "Marketing",
     image: "camera1.webp",
     excerpt: "Self-optimizing campaign system with predictive analytics"
   }
+  
 ];
 
 const NEWS_DATA = [
@@ -146,7 +162,7 @@ const FAQ_DATA = [
 
 const Home = () => {
   const { theme } = useTheme();
-  
+
   // Theme-specific styles
   const themeStyles = {
     dark: {
@@ -189,7 +205,30 @@ const Home = () => {
   });
   const [message, setMessage] = useState("");
   const [activeFAQ, setActiveFAQ] = useState(null);
-  
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [services] = useState([
+    {
+      title: "Web Development",
+      description: "Crafting seamless and intuitive web experiences with cutting-edge technologies.",
+      icon: <FaLaptopCode />
+    },
+    {
+      title: "Mobile App Development",
+      description: "Building high-performance mobile applications for iOS and Android platforms.",
+      icon: <FaMobileAlt />
+    },
+    {
+      title: "Digital Marketing",
+      description: "Driving growth and engagement through strategic digital marketing campaigns.",
+      icon: <FaBullhorn />
+    },
+    {
+      title: "UI/UX Design",
+      description: "Creating visually stunning and user-centered designs that enhance usability.",
+      icon: <FaPaintBrush />
+    }
+  ]);
+
   // Refs
   const formRef = useRef();
   const newsContainerRef = useRef();
@@ -214,7 +253,7 @@ const Home = () => {
   const sendEmail = useCallback(async (e) => {
     e.preventDefault();
     setMessage("Sending...");
-   
+
     try {
       await emailjs.sendForm(
         process.env.REACT_APP_EMAILJS_SERVICE_ID,
@@ -494,138 +533,175 @@ const Home = () => {
   </div>
 </section>
 
-      {/* Portfolio Section */}
-      <section id="work" className={`py-12 px-4 ${
-        theme === 'dark' ? 'bg-gray-950/80' : 'bg-white/90'
-      } backdrop-blur-sm`}>
-        <div className="max-w-5xl mx-auto">
+<section id="work" className={`py-16 px-4 ${theme === 'dark' ? 'bg-gray-950' : 'bg-[#F0F8FF]'}`}> 
+  <div className="max-w-5xl mx-auto">
+    {/* Header */}
+    <motion.div
+      className="text-center mb-12"
+      initial={{ opacity: 0, y: 15 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-60px" }}
+    >
+      <h2 className="text-xl md:text-2xl font-light mb-2">
+        <span className={`text-transparent bg-clip-text bg-gradient-to-r ${
+          theme === 'dark' ? 'from-cyan-400 to-blue-500' : 'from-blue-500 to-blue-700'
+        }`}>Selected</span> Works
+      </h2>
+      <p className={`${
+        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+      } max-w-lg mx-auto text-xs`}>
+        Explore our groundbreaking projects that redefine digital interaction paradigms.
+      </p>
+    </motion.div>
+
+    {/* Carousel for all screens */}
+    <div className="relative">
+      <div className="flex overflow-x-hidden snap-x snap-mandatory scroll-smooth space-x-4 px-2">
+        {memoizedPortfolioItems.map((item, index) => (
           <motion.div
-            className="text-center mb-10"
+            key={item.id}
+            id={`slide-${index}`}
+            className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 snap-start"
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
+            transition={{ delay: 0.08 * index, duration: 0.4 }}
           >
-            <h2 className="text-xl md:text-4xl font-light mb-4">
-              <span className={`text-transparent bg-clip-text bg-gradient-to-r ${
-                theme === 'dark' ? 'from-cyan-400 to-blue-500' : 'from-blue-500 to-blue-700'
-              }`}>Selected</span> Works
-            </h2>
-            <p className={`${
-              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-            } max-w-lg mx-auto text-xl`}>
-              Explore our groundbreaking projects that redefine digital interaction paradigms.
-            </p>
+            <div className={`p-6 rounded-2xl ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'} shadow-md h-full mx-2`}>
+              <div className="aspect-video rounded-xl overflow-hidden mb-4">
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="w-full h-full object-cover transition-transform duration-300 ease-in-out hover:scale-105"
+                  loading="lazy"
+                />
+              </div>
+              <h3 className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                {item.title}
+              </h3>
+              <p className={`${theme === 'dark' ? 'text-cyan-400' : 'text-blue-500'} text-xs mb-2`}>
+                {item.category}
+              </p>
+              <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} text-sm mb-6`}>
+                {item.excerpt}
+              </p>
+              <div className={`text-2xl ${theme === 'dark' ? 'text-cyan-400' : 'text-blue-500'} absolute bottom-6 right-6 transition-all duration-300 ease-in-out hover:scale-110`}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+              </div>
+            </div>
           </motion.div>
+        ))}
+      </div>
+      
+      {/* Navigation arrows */}
+      <div className="flex justify-end space-x-2 mt-4">
+        <button 
+          onClick={() => {
+            const container = document.querySelector('.flex.overflow-x-hidden');
+            container.scrollBy({ left: -container.clientWidth, behavior: 'smooth' });
+          }}
+          className={`p-2 rounded-full ${theme === 'dark' ? 'bg-gray-800 text-cyan-400' : 'bg-blue-100 text-blue-600'} hover:opacity-80 transition-opacity`}
+          aria-label="Previous slide"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
+        </button>
+        <button 
+          onClick={() => {
+            const container = document.querySelector('.flex.overflow-x-hidden');
+            container.scrollBy({ left: container.clientWidth, behavior: 'smooth' });
+          }}
+          className={`p-2 rounded-full ${theme === 'dark' ? 'bg-gray-800 text-cyan-400' : 'bg-blue-100 text-blue-600'} hover:opacity-80 transition-opacity`}
+          aria-label="Next slide"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {memoizedPortfolioItems.map((item) => (
-              <PortfolioItem key={item.id} item={item} />
-            ))}
-          </div>
-        </div>
-      </section>
+{/* Services Section - Apple Style Carousel */}
+<section className={`py-12 px-4 bg-[#F0F8FF]`}> {/* Using a light blue similar to the image */}
+  <div className="max-w-4xl mx-auto relative">
+    {/* Header (unchanged) */}
+    <motion.div
+      className="text-center mb-10"
+      initial={{ opacity: 0, y: 15 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-60px" }}
+    >
+      <h2 className={`text-xl md:text-2xl font-light mb-2 text-gray-900`}> {/* Removed theme-based text color for simplicity */}
+        <span className={`text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-blue-700`}>Specialized</span> Services {/* Removed theme-based gradient */}
+      </h2>
+      <p className={`text-gray-600 max-w-lg mx-auto text-xs`}> {/* Removed theme-based text color */}
+        Our offerings blend cutting-edge technology with intuitive design principles.
+      </p>
+    </motion.div>
 
-      {/* Services Section */}
-      <section className={`py-12 px-4 ${
-        theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'
-      } backdrop-blur-sm`}>
-        <div className="max-w-4xl mx-auto">
+    {/* Carousel Container */}
+    <div className="relative overflow-hidden">
+      {/* Cards Container */}
+      <div className="flex transition-transform duration-500 ease-in-out" style={{ transform: `translateX(-${currentIndex * 100}%)` }}> {/* Increased duration for smoother animation */}
+        {services.map((service, index) => (
           <motion.div
-            className="text-center mb-10"
+            key={index}
+            className="w-full flex-shrink-0 px-4"
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
+            transition={{ delay: 0.08 * index, duration: 0.4 }}
           >
-            <h2 className="text-xl md:text-2xl font-light mb-2 ${
-              theme === 'dark' ? 'text-[#ECF2F0]' : 'text-gray-900'
-            }">
-              <span className={`text-transparent bg-clip-text bg-gradient-to-r ${
-                theme === 'dark' ? 'from-[#8BA89A] to-[#C7CFCA]' : 'from-blue-500 to-blue-700'
-              }`}>Specialized</span> Services
-            </h2>
-            <p className={`${
-              theme === 'dark' ? 'text-[#C7CFCA]' : 'text-gray-600'
-            } max-w-lg mx-auto text-xs`}>
-              Our offerings blend cutting-edge technology with intuitive design principles.
-            </p>
+            <div className={`p-6 rounded-2xl bg-white shadow-md h-full`}>
+              <div className="flex justify-start items-start mb-4"> {/* Align items to start */}
+                <div className={`text-2xl text-blue-500`}> {/* Removed theme-based icon color */}
+                  {service.icon}
+                </div>
+                {/* Removed the right arrow */}
+              </div>
+              <h3 className={`text-lg font-medium mb-2 text-gray-900`}> {/* Removed theme-based text color */}
+                {service.title}
+              </h3>
+              <p className={`text-gray-600 text-sm mb-6`}> {/* Removed theme-based text color */}
+                {service.description}
+              </p>
+              <div className={`text-2xl text-blue-500 absolute bottom-6 right-6`}> {/* Removed theme-based plus icon color */}
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+              </div>
+            </div>
           </motion.div>
+        ))}
+      </div>
 
-          <div className="grid md:grid-cols-3 gap-3">
-            <motion.div
-              className={`p-4 rounded-md border ${
-                theme === 'dark' ? 'border-gray-700 hover:border-[#8BA89A]' : 'border-gray-200 hover:border-blue-400'
-              } transition-colors ${
-                theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-              }`}
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ delay: 0.08, duration: 0.4 }}
-            >
-              <div className={`${
-                theme === 'dark' ? 'text-[#8BA89A]' : 'text-blue-500'
-              } text-lg mb-2`}><FaLaptopCode /></div>
-              <h3 className={`text-base font-medium mb-1 ${
-                theme === 'dark' ? 'text-[#ECF2F0]' : 'text-gray-900'
-              }`}>Quantum Web Design</h3>
-              <p className={`${
-                theme === 'dark' ? 'text-[#C7CFCA]' : 'text-gray-600'
-              } text-2xs`}>
-                Websites that leverage quantum principles for adaptive layouts and predictive interfaces.
-              </p>
-            </motion.div>
-
-            <motion.div
-              className={`p-4 rounded-md border ${
-                theme === 'dark' ? 'border-gray-700 hover:border-[#8BA89A]' : 'border-gray-200 hover:border-blue-400'
-              } transition-colors ${
-                theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-              }`}
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ delay: 0.16, duration: 0.4 }}
-            >
-              <div className={`${
-                theme === 'dark' ? 'text-[#8BA89A]' : 'text-blue-500'
-              } text-lg mb-2`}><FaMobileAlt /></div>
-              <h3 className={`text-base font-medium mb-1 ${
-                theme === 'dark' ? 'text-[#ECF2F0]' : 'text-gray-900'
-              }`}>Neural Mobile Apps</h3>
-              <p className={`${
-                theme === 'dark' ? 'text-[#C7CFCA]' : 'text-gray-600'
-              } text-2xs`}>
-                Thought-controlled applications with biometric feedback and cognitive load optimization.
-              </p>
-            </motion.div>
-
-            <motion.div
-              className={`p-4 rounded-md border ${
-                theme === 'dark' ? 'border-gray-700 hover:border-[#8BA89A]' : 'border-gray-200 hover:border-blue-400'
-              } transition-colors ${
-                theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-              }`}
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ delay: 0.24, duration: 0.4 }}
-            >
-              <div className={`${
-                theme === 'dark' ? 'text-[#8BA89A]' : 'text-blue-500'
-              } text-lg mb-2`}><FaPaintBrush /></div>
-              <h3 className={`text-base font-medium mb-1 ${
-                theme === 'dark' ? 'text-[#ECF2F0]' : 'text-gray-900'
-              }`}>Motion Design</h3>
-              <p className={`${
-                theme === 'dark' ? 'text-[#C7CFCA]' : 'text-gray-600'
-              } text-2xs`}>
-                Engaging animations and micro-interactions.
-              </p>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
+      {/* Navigation Arrows - Placed below the carousel */}
+      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex space-x-4 mt-6">
+        {currentIndex > 0 && (
+          <button
+            onClick={() => setCurrentIndex(prev => Math.max(prev - 1, 0))}
+            className="bg-white rounded-full p-2 shadow-md text-gray-500"
+          >
+            <FiChevronLeft />
+          </button>
+        )}
+        {currentIndex < services.length - 1 && (
+          <button
+            onClick={() => setCurrentIndex(prev => Math.min(prev + 1, services.length - 1))}
+            className="bg-white rounded-full p-2 shadow-md text-gray-500"
+          >
+            <FiChevronRight />
+          </button>
+        )}
+      </div>
+    </div>
+  </div>
+</section>
       {/* News Section */}
       <section className={`py-20 px-6 overflow-hidden ${
         theme === 'dark' ? 'bg-gray-950' : 'bg-white'
@@ -683,9 +759,9 @@ const Home = () => {
 
           <div className="space-y-4">
             {memoizedFaqData.map((item, index) => (
-              <FAQItem 
-                key={index} 
-                item={item} 
+              <FAQItem
+                key={index}
+                item={item}
                 index={index}
                 isActive={activeFAQ === index}
                 onClick={toggleFAQ}
@@ -710,7 +786,7 @@ const Home = () => {
               } backdrop-blur-sm`}
               onClick={() => setShowModal(false)}
             ></div>
-          
+
             <motion.div
               className={`relative rounded-xl border shadow-2xl w-full max-w-md p-6 ${
                 theme === 'dark' ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'
