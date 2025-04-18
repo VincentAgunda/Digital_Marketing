@@ -695,7 +695,7 @@ const Home = () => {
           Access technical manuals, tutorials, and essential resources tailored to your device.
         </p>
       </div>
-      <button className="mt-4 text-base text-black font-medium bg-yellow-400 px-5 py-2 rounded-full w-fit hover:bg-yellow-300 transition">
+      <button className="mt-4 text-base text-black font-medium bg-[#EDEEEE] px-5 py-2 rounded-full w-fit hover:bg-yellow-300 transition">
         Show me more →
       </button>
     </div>
@@ -708,7 +708,7 @@ const Home = () => {
           Purpose-built communication solutions for government, education, and frontline services.
         </p>
       </div>
-      <button className="mt-4 text-base font-medium bg-yellow-400 text-black px-5 py-2 rounded-full w-fit hover:bg-yellow-300 transition">
+      <button className="mt-4 text-base font-medium bg-[#EDEEEE] text-black px-5 py-2 rounded-full w-fit hover:bg-yellow-300 transition">
         Show me more →
       </button>
     </div>
@@ -726,7 +726,7 @@ const Home = () => {
     </div>
 
     {/* Newsletter Block */}
-    <div className="bg-[#ffd600] rounded-xl p-6 flex flex-col justify-center">
+    <div className="bg-[#EDEEEE] rounded-xl p-6 flex flex-col justify-center">
       <h3 className="text-xl font-semibold mb-4 text-black">Sign up for our newsletter</h3>
       <div className="flex items-center bg-white rounded-full overflow-hidden w-full max-w-md">
         <input
