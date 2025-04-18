@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { FaSun, FaMoon } from "react-icons/fa"; // Import icons
 
-// Font setup
+// Font setup - Keep this consistent
 const fontStyle = {
   fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
   fontWeight: 300
@@ -11,8 +12,9 @@ const BlogPage = () => {
   const [posts, setPosts] = useState([]);
   const [selectedPost, setSelectedPost] = useState(null);
   const [hoveredPost, setHoveredPost] = useState(null);
+  const [darkMode, setDarkMode] = useState(true); // Add darkMode state
 
-  // Sample blog data with expanded content
+  // Sample blog data with expanded content (same as before)
   useEffect(() => {
     const placeholderPosts = [
       {
@@ -167,28 +169,42 @@ const BlogPage = () => {
   }, []);
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen bg-gray-950 text-gray-100"
+      // Apply theme-based background and text color to the main container
+      className={`min-h-screen transition-colors duration-500 ${darkMode ? "bg-gray-950 text-gray-100" : "bg-white text-gray-900"}`}
       style={fontStyle}
     >
+      {/* Theme Toggle */}
+      <div className="max-w-7xl mx-auto py-4 px-4 md:px-8 flex justify-end">
+         <button
+            onClick={() => setDarkMode((prev) => !prev)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-all ${darkMode ? "bg-gray-700 hover:bg-gray-600 text-white" : "bg-gray-200 hover:bg-gray-300 text-gray-800"}`}
+          >
+            {darkMode ? <FaSun /> : <FaMoon />}
+            {darkMode ? "Light Mode" : "Dark Mode"}
+          </button>
+      </div>
+
       {/* Futuristic header */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(34,211,238,0.1)_0%,_transparent_70%)] opacity-30"></div>
-        <div className="container mx-auto px-6 py-20 md:py-28 relative z-10">
+        {/* Background effect changes slightly with theme */}
+        <div className={`absolute inset-0 ${darkMode ? "bg-[radial-gradient(circle_at_center,_rgba(34,211,238,0.1)_0%,_transparent_70%)] opacity-30" : "bg-[radial-gradient(circle_at_center,_rgba(59,130,246,0.1)_0%,_transparent_70%)] opacity-20"}`}></div>
+        <div className="container mx-auto px-6 py-10 md:py-16 relative z-10"> {/* Adjusted padding */}
           <motion.h1
-            className="text-5xl md:text-6xl font-light text-center mb-6 tracking-tight"
+            className={`text-5xl md:text-6xl font-light text-center mb-4 tracking-tight ${darkMode ? "text-gray-100" : "text-gray-900"}`} // Theme-based text color
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8 }}
           >
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Quantum</span> Insights
           </motion.h1>
-          <motion.p 
-            className="text-xl text-center text-gray-400 max-w-2xl mx-auto"
+          <motion.p
+            // Theme-based text color for description
+            className={`text-xl text-center max-w-2xl mx-auto ${darkMode ? "text-gray-400" : "text-gray-600"}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
@@ -201,7 +217,7 @@ const BlogPage = () => {
       {/* Blog grid */}
       <div className="container mx-auto px-6 pb-20">
         {!selectedPost ? (
-          <motion.div 
+          <motion.div
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
             initial="hidden"
             animate="visible"
@@ -218,7 +234,8 @@ const BlogPage = () => {
             {posts.map((post) => (
               <motion.article
                 key={post.id}
-                className="group relative overflow-hidden rounded-xl border border-gray-800 hover:border-cyan-400/30 transition-all duration-300"
+                // Theme-based border and background on hover
+                className={`group relative overflow-hidden rounded-xl transition-all duration-300 ${darkMode ? "border border-gray-800 hover:border-cyan-400/30" : "border border-gray-200 hover:border-blue-400/30 bg-white hover:bg-gray-50"}`}
                 variants={{
                   hidden: { y: 20, opacity: 0 },
                   visible: { y: 0, opacity: 1 }
@@ -228,33 +245,38 @@ const BlogPage = () => {
                 onMouseLeave={() => setHoveredPost(null)}
                 onClick={() => setSelectedPost(post)}
               >
-                {/* Holographic effect */}
+                {/* Holographic effect changes slightly with theme */}
                 {hoveredPost === post.id && (
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(34,211,238,0.05)_0%,_transparent_70%)] pointer-events-none"></div>
+                  <div className={`absolute inset-0 ${darkMode ? "bg-[radial-gradient(circle_at_center,_rgba(34,211,238,0.05)_0%,_transparent_70%)]" : "bg-[radial-gradient(circle_at_center,_rgba(59,130,246,0.05)_0%,_transparent_70%)]"} pointer-events-none`}></div>
                 )}
-                
+
                 <div className="aspect-[4/3] overflow-hidden relative">
                   <img
                     src={post.image}
                     alt={post.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-transparent to-transparent"></div>
+                   {/* Gradient overlay changes slightly with theme */}
+                  <div className={`absolute inset-0 ${darkMode ? "bg-gradient-to-t from-gray-950/80" : "bg-gradient-to-t from-white/80"} via-transparent to-transparent`}></div>
                 </div>
-                
+
                 <div className="p-6">
                   <div className="flex flex-wrap gap-2 mb-3">
                     {post.tags.map(tag => (
-                      <span key={tag} className="text-xs px-2 py-1 bg-gray-800 rounded-full text-cyan-400">
+                      // Theme-based tag style
+                      <span key={tag} className={`text-xs px-2 py-1 rounded-full ${darkMode ? "bg-gray-800 text-cyan-400" : "bg-gray-200 text-blue-600"}`}>
                         {tag}
                       </span>
                     ))}
                   </div>
-                  <h3 className="text-xl font-medium mb-2">{post.title}</h3>
-                  <p className="text-gray-400 text-sm mb-4">{post.excerpt}</p>
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-500">{post.date}</span>
-                    <span className="text-cyan-400 group-hover:text-white transition-colors">
+                  {/* Theme-based title text color */}
+                  <h3 className={`text-xl font-medium mb-2 ${darkMode ? "text-gray-100" : "text-gray-900"}`}>{post.title}</h3>
+                   {/* Theme-based excerpt text color */}
+                  <p className={`text-sm mb-4 ${darkMode ? "text-gray-400" : "text-gray-700"}`}>{post.excerpt}</p>
+                   {/* Theme-based date and link text color */}
+                  <div className={`flex justify-between items-center text-sm ${darkMode ? "text-gray-500" : "text-gray-500"}`}>
+                    <span>{post.date}</span>
+                    <span className={`group-hover:${darkMode ? "text-white" : "text-blue-600"} transition-colors`}>
                       Read ↗
                     </span>
                   </div>
@@ -271,8 +293,9 @@ const BlogPage = () => {
               exit={{ opacity: 0, y: 20 }}
             >
               <motion.button
+                // Theme-based back button color
                 onClick={() => setSelectedPost(null)}
-                className="flex items-center text-cyan-400 hover:text-white mb-8 transition-colors"
+                className={`flex items-center mb-8 transition-colors ${darkMode ? "text-cyan-400 hover:text-white" : "text-blue-600 hover:text-blue-800"}`}
                 whileHover={{ x: -3 }}
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="mr-2">
@@ -288,15 +311,18 @@ const BlogPage = () => {
               >
                 <div className="flex flex-wrap gap-2 mb-4">
                   {selectedPost.tags.map(tag => (
-                    <span key={tag} className="text-xs px-2 py-1 bg-gray-800 rounded-full text-cyan-400">
+                     // Theme-based tag style
+                    <span key={tag} className={`text-xs px-2 py-1 rounded-full ${darkMode ? "bg-gray-800 text-cyan-400" : "bg-gray-200 text-blue-600"}`}>
                       {tag}
                     </span>
                   ))}
                 </div>
-                <h2 className="text-3xl md:text-4xl font-light mb-4 leading-tight">
+                 {/* Theme-based title text color */}
+                <h2 className={`text-3xl md:text-4xl font-light mb-4 leading-tight ${darkMode ? "text-gray-100" : "text-gray-900"}`}>
                   {selectedPost.title}
                 </h2>
-                <p className="text-gray-400 mb-6">By {selectedPost.author} · {selectedPost.date}</p>
+                 {/* Theme-based author/date text color */}
+                <p className={`mb-6 ${darkMode ? "text-gray-400" : "text-gray-600"}`}>By {selectedPost.author} · {selectedPost.date}</p>
               </motion.header>
 
               <motion.div
@@ -310,11 +336,13 @@ const BlogPage = () => {
                   alt={selectedPost.title}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-950/30 via-transparent to-transparent"></div>
+                 {/* Gradient overlay changes slightly with theme */}
+                <div className={`absolute inset-0 ${darkMode ? "bg-gradient-to-t from-gray-950/30" : "bg-gradient-to-t from-white/30"} via-transparent to-transparent`}></div>
               </motion.div>
 
               <motion.div
-                className="prose prose-invert max-w-none"
+                 // Use theme-based prose styles (requires @tailwindcss/typography plugin)
+                className={`prose max-w-none ${darkMode ? "prose-invert" : ""}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
@@ -322,31 +350,42 @@ const BlogPage = () => {
               />
 
               {/* Article footer */}
-              <motion.div 
-                className="mt-16 pt-8 border-t border-gray-800"
+              <motion.div
+                // Theme-based border color
+                className={`mt-16 pt-8 ${darkMode ? "border-t border-gray-800" : "border-t border-gray-200"}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
               >
-                <h3 className="text-lg font-medium mb-4">About the Author</h3>
+                 {/* Theme-based text color */}
+                <h3 className={`text-lg font-medium mb-4 ${darkMode ? "text-gray-100" : "text-gray-900"}`}>About the Author</h3>
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center text-xl">
+                   {/* Theme-based avatar background */}
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl ${darkMode ? "bg-gray-800 text-gray-300" : "bg-gray-200 text-gray-700"}`}>
                     {selectedPost.author.split(' ').map(n => n[0]).join('')}
                   </div>
                   <div>
-                    <p className="font-medium">{selectedPost.author}</p>
-                    <p className="text-gray-400 text-sm">Senior Researcher at NeuroTech Labs</p>
+                     {/* Theme-based author name color */}
+                    <p className={`font-medium ${darkMode ? "text-gray-100" : "text-gray-900"}`}>{selectedPost.author}</p>
+                     {/* Theme-based author title color */}
+                    <p className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}>Senior Researcher at NeuroTech Labs</p>
                   </div>
                 </div>
-                
+
                 <div className="mt-8 flex gap-4">
-                  <button className="px-4 py-2 rounded-lg border border-gray-700 hover:bg-gray-800/50 transition-colors">
+                  <button
+                     // Theme-based button styles
+                    className={`px-4 py-2 rounded-lg transition-colors ${darkMode ? "border border-gray-700 hover:bg-gray-800/50 text-gray-100" : "border border-gray-300 hover:bg-gray-100 text-gray-800"}`}
+                  >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="inline mr-2">
                       <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13" strokeWidth="2"/>
                     </svg>
                     Save
                   </button>
-                  <button className="px-4 py-2 rounded-lg border border-gray-700 hover:bg-gray-800/50 transition-colors">
+                  <button
+                     // Theme-based button styles
+                     className={`px-4 py-2 rounded-lg transition-colors ${darkMode ? "border border-gray-700 hover:bg-gray-800/50 text-gray-100" : "border border-gray-300 hover:bg-gray-100 text-gray-800"}`}
+                  >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="inline mr-2">
                       <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" strokeWidth="2"/>
                     </svg>

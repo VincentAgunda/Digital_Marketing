@@ -155,6 +155,11 @@ const FAQ_DATA = [
     a: "We specialize in quantum web design, neural interface development, holographic branding, and AI-powered marketing systems."
   },
   {
+    q: 'Is this technology compatible with existing systems?',
+    a: 'Yes, our technology is designed with interoperability in mind and offers comprehensive APIs for easy integration into your current infrastructure.'
+  },
+  
+  {
     q: "What makes your approach unique?",
     a: "We combine quantum computing principles with neural design patterns to create interfaces that adapt to users' cognitive states in real-time."
   }
@@ -472,7 +477,7 @@ const Home = () => {
     >
 {/* Hero Section */}
 <section className={`relative py-24 px-6 md:px-16 lg:px-32 overflow-hidden ${
-  theme === 'dark' ? 'text-white' : 'text-gray-900'
+  theme === 'dark' ? 'bg-gray-900 text-white' : 'blue-700 text-gray-900'
 }`}>
   <div className="absolute inset-0">
     <img
@@ -482,7 +487,7 @@ const Home = () => {
       loading="lazy"
     />
     <div className={`absolute inset-0 ${
-      theme === 'dark' ? 'bg-black/20' : 'bg-white/10'
+      theme === 'dark' ? 'bg-black/20' : 'bg-white/70'
     } backdrop-blur-sm`}></div>
   </div>
 
@@ -494,12 +499,12 @@ const Home = () => {
     >
       <h1 className="text-4xl md:text-5xl font-semibold leading-tight mb-5">
         <span className={`text-transparent bg-clip-text bg-gradient-to-r ${
-          theme === 'dark' ? 'from-[#42A5F5] to-[#E91E63]' : 'from-[#42A5F5] to-[#E91E63]'
+          theme === 'dark' ? 'from-[#42A5F5] to-[#E91E63]' : 'from-[#007AFF] to-[#005ECB]'
         } font-medium tracking-tight`}>Nexture Digital</span><br />
-        Designing <span className={theme === 'dark' ? 'text-[#E91E63]' : 'text-[#E91E63]'}>futuristic</span> experiences
+        Designing <span className={theme === 'dark' ? 'text-[#E91E63]' : 'text-[#005ECB]'}>futuristic</span> experiences
       </h1>
       <p className={`${
-        theme === 'dark' ? 'text-gray-400' : 'text-gray-400' // Adjusted text colors for better visibility
+        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
       } text-base md:text-lg max-w-md mb-6`}>
         We blend AI, neural UX, and modern tech into sleek adaptive interfaces.
       </p>
@@ -509,19 +514,19 @@ const Home = () => {
           whileTap={{ scale: 0.97 }}
           onClick={() => setShowModal(true)}
           className={`px-5 py-2.5 ${
-            theme === 'dark' ? 'bg-[#42A5F5] hover:bg-[#64B5F6]' : 'bg-[#42A5F5] hover:bg-[#64B5F6]'
+            theme === 'dark' ? 'bg-[#42A5F5] hover:bg-[#64B5F6]' : 'bg-[#007AFF] hover:bg-[#005ECB]'
           } rounded-lg text-sm font-medium shadow-md transition text-white`}
         >
-          Start Project
+          Book a strategic Call
         </motion.button>
         <motion.a
           href="#work"
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
           className={`px-5 py-2.5 border ${
-            theme === 'dark' ? 'border-gray-600 hover:border-[#E91E63]' : 'border-gray-300 hover:border-[#E91E63]'
+            theme === 'dark' ? 'border-gray-600 hover:border-[#E91E63]' : 'border-gray-300 hover:border-[#007AFF]'
           } rounded-lg text-sm font-medium transition ${
-            theme === 'dark' ? 'text-gray-400' : 'text-gray-700' // Adjusted text colors for better visibility
+            theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
           }`}
         >
           View Work
@@ -533,41 +538,43 @@ const Home = () => {
   </div>
 </section>
 
-<section id="work" className={`py-16 px-4 ${theme === 'dark' ? 'bg-gray-950' : 'bg-[#F0F8FF]'}`}> 
-  <div className="max-w-5xl mx-auto">
-    {/* Header */}
+<section id="work" className={`py-16 px-4 ${theme === 'dark' ? 'bg-gray-950' : 'bg-gray-100'}`}> {/* Light gray background for light theme */}
+  <div className="max-w-6xl mx-auto relative"> {/* Relative positioning for absolute arrows */}
+    {/* Header - Styled with dark text colors and increased font sizes */}
     <motion.div
       className="text-center mb-12"
       initial={{ opacity: 0, y: 15 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
     >
-      <h2 className="text-xl md:text-2xl font-light mb-2">
-        <span className={`text-transparent bg-clip-text bg-gradient-to-r ${
-          theme === 'dark' ? 'from-cyan-400 to-blue-500' : 'from-blue-500 to-blue-700'
-        }`}>Selected</span> Works
+      <h2 className={`text-2xl md:text-3xl font-light mb-2 ${theme === 'dark' ? 'text-white' : 'text-[#5a7894]'}`}>
+        Selected Works
       </h2>
       <p className={`${
         theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-      } max-w-lg mx-auto text-xs`}>
+      } max-w-lg mx-auto text-sm md:text-base`}>
         Explore our groundbreaking projects that redefine digital interaction paradigms.
       </p>
     </motion.div>
 
-    {/* Carousel for all screens */}
-    <div className="relative">
-      <div className="flex overflow-x-hidden snap-x snap-mandatory scroll-smooth space-x-4 px-2">
+    {/* Carousel container with padding for arrows and styled scrollbar */}
+    <div className="relative px-8 md:px-12"> {/* Horizontal padding to make space for arrows */}
+       <div className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth space-x-6 pb-4 styled-scrollbar"> {/* Horizontal scrolling, snapping, spacing, and styled scrollbar class */}
+        {/* Carousel Items */}
+        {/* These will scroll horizontally */}
         {memoizedPortfolioItems.map((item, index) => (
           <motion.div
             key={item.id}
             id={`slide-${index}`}
-            className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 snap-start"
+            className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 snap-center" // Item sizing for carousel slides
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ delay: 0.08 * index, duration: 0.4 }}
           >
-            <div className={`p-6 rounded-2xl ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'} shadow-md h-full mx-2`}>
+            {/* Card Styles - White background in light mode, shadow, etc. */}
+            <div className={`p-5 rounded-2xl ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'} shadow-md h-full`}>
+              {/* Image container */}
               <div className="aspect-video rounded-xl overflow-hidden mb-4">
                 <img
                   src={item.image}
@@ -576,145 +583,181 @@ const Home = () => {
                   loading="lazy"
                 />
               </div>
-              <h3 className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              {/* Card content with dark text colors and adjusted font sizes */}
+              <h3 className={`text-lg md:text-xl font-medium mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 {item.title}
               </h3>
-              <p className={`${theme === 'dark' ? 'text-cyan-400' : 'text-blue-500'} text-xs mb-2`}>
+              <p className={`${theme === 'dark' ? 'text-cyan-400' : 'text-gray-700'} text-sm mb-3`}> {/* Dark gray category text */}
                 {item.category}
               </p>
-              <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} text-sm mb-6`}>
+              <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-700'} text-sm md:text-base mb-6`}> {/* Dark gray description text */}
                 {item.excerpt}
               </p>
-              <div className={`text-2xl ${theme === 'dark' ? 'text-cyan-400' : 'text-blue-500'} absolute bottom-6 right-6 transition-all duration-300 ease-in-out hover:scale-110`}>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-              </div>
+              {/* Arrow icon within card - Dark gray color */}
+               <div className={`text-2xl ${theme === 'dark' ? 'text-cyan-400' : 'text-gray-800'} absolute bottom-5 right-5 transition-all duration-300 ease-in-out hover:scale-110`}>
+                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                 </svg>
+               </div>
             </div>
           </motion.div>
         ))}
       </div>
-      
-      {/* Navigation arrows */}
-      <div className="flex justify-end space-x-2 mt-4">
-        <button 
-          onClick={() => {
-            const container = document.querySelector('.flex.overflow-x-hidden');
-            container.scrollBy({ left: -container.clientWidth, behavior: 'smooth' });
-          }}
-          className={`p-2 rounded-full ${theme === 'dark' ? 'bg-gray-800 text-cyan-400' : 'bg-blue-100 text-blue-600'} hover:opacity-80 transition-opacity`}
-          aria-label="Previous slide"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-          </svg>
-        </button>
-        <button 
-          onClick={() => {
-            const container = document.querySelector('.flex.overflow-x-hidden');
-            container.scrollBy({ left: container.clientWidth, behavior: 'smooth' });
-          }}
-          className={`p-2 rounded-full ${theme === 'dark' ? 'bg-gray-800 text-cyan-400' : 'bg-blue-100 text-blue-600'} hover:opacity-80 transition-opacity`}
-          aria-label="Next slide"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-          </svg>
-        </button>
+
+      {/* Navigation arrows - Positioned absolutely, centered vertically on the sides */}
+      {/* Styled as circular buttons with light gray background and dark arrow icons */}
+      <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between px-2 pointer-events-none">
+          {/* Left Arrow */}
+          <button
+            onClick={() => {
+              const container = document.querySelector('.styled-scrollbar');
+              if (container) {
+                 const firstCard = container.querySelector('.flex-shrink-0');
+                 if (firstCard) {
+                    const cardWidth = firstCard.offsetWidth;
+                    const gap = 24; // space-x-6 is 24px
+                    container.scrollBy({ left: -(cardWidth + gap), behavior: 'smooth' });
+                 } else {
+                     container.scrollBy({ left: -container.clientWidth / 2, behavior: 'smooth' });
+                 }
+              }
+            }}
+            className={`p-3 rounded-full bg-gray-300 text-gray-800 hover:bg-gray-400 transition-colors shadow-md pointer-events-auto`}
+            aria-label="Previous slide"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+          </button>
+
+          {/* Right Arrow */}
+          <button
+            onClick={() => {
+              const container = document.querySelector('.styled-scrollbar');
+               if (container) {
+                  const firstCard = container.querySelector('.flex-shrink-0');
+                  if (firstCard) {
+                     const cardWidth = firstCard.offsetWidth;
+                     const gap = 24; // space-x-6 is 24px
+                     container.scrollBy({ left: (cardWidth + gap), behavior: 'smooth' });
+                   } else {
+                       container.scrollBy({ left: container.clientWidth / 2, behavior: 'smooth' });
+                   }
+               }
+            }}
+             className={`p-3 rounded-full bg-gray-300 text-gray-800 hover:bg-gray-400 transition-colors shadow-md pointer-events-auto`}
+            aria-label="Next slide"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+          </button>
       </div>
     </div>
   </div>
 </section>
 
-{/* Services Section - Apple Style Carousel */}
-<section className={`py-12 px-4 bg-[#F0F8FF]`}> {/* Using a light blue similar to the image */}
-  <div className="max-w-4xl mx-auto relative">
-    {/* Header (unchanged) */}
-    <motion.div
-      className="text-center mb-10"
-      initial={{ opacity: 0, y: 15 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-    >
-      <h2 className={`text-xl md:text-2xl font-light mb-2 text-gray-900`}> {/* Removed theme-based text color for simplicity */}
-        <span className={`text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-blue-700`}>Specialized</span> Services {/* Removed theme-based gradient */}
-      </h2>
-      <p className={`text-gray-600 max-w-lg mx-auto text-xs`}> {/* Removed theme-based text color */}
-        Our offerings blend cutting-edge technology with intuitive design principles.
+{/* Add this CSS to your global stylesheet (e.g., index.css or within a <style> tag) */}
+{/* This styles the thin scrollbar for the carousel */}
+<style jsx global>{`
+.styled-scrollbar {
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: #a0a0a0 #f1f1f1; /* For Firefox (thumb track) */
+}
+
+/* For Chrome, Edge, and Safari */
+.styled-scrollbar::-webkit-scrollbar {
+  height: 6px; /* Thickness of the scrollbar */
+}
+
+.styled-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Color of the scrollbar track */
+  border-radius: 3px;
+}
+
+.styled-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #a0a0a0; /* Color of the scrollbar thumb */
+  border-radius: 3px;
+}
+
+.styled-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #808080; /* Color of the scrollbar thumb on hover */
+}
+`}</style>
+<section className="py-16 px-4 bg-[#f0f8ff]">
+  <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+    
+    {/* Product Support Block */}
+    <div className="bg-[#dce6e3] rounded-xl p-6 flex flex-col justify-between min-h-[180px]">
+      <div>
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">Product support</h3>
+        <p className="text-base text-gray-700">
+          Access technical manuals, tutorials, and essential resources tailored to your device.
+        </p>
+      </div>
+      <button className="mt-4 text-base text-black font-medium bg-yellow-400 px-5 py-2 rounded-full w-fit hover:bg-yellow-300 transition">
+        Show me more →
+      </button>
+    </div>
+
+    {/* Public Sector Block */}
+    <div className="bg-[#5a7894] text-white rounded-xl p-6 flex flex-col justify-between min-h-[180px]">
+      <div>
+        <h3 className="text-xl font-semibold mb-2">Public sector</h3>
+        <p className="text-base">
+          Purpose-built communication solutions for government, education, and frontline services.
+        </p>
+      </div>
+      <button className="mt-4 text-base font-medium bg-yellow-400 text-black px-5 py-2 rounded-full w-fit hover:bg-yellow-300 transition">
+        Show me more →
+      </button>
+    </div>
+
+    {/* Social Media Block */}
+    <div className="bg-[#acb4b4] text-white rounded-xl p-6 flex flex-col justify-center items-start">
+      <h3 className="text-xl font-semibold mb-4">Follow us</h3>
+      <p className="text-base mb-4">Stay updated with the latest stories, updates, and announcements.</p>
+      <div className="flex space-x-3 text-black">
+        <div className="bg-black rounded-full p-2 text-white">T</div>
+        <div className="bg-black rounded-full p-2 text-white">F</div>
+        <div className="bg-black rounded-full p-2 text-white">Y</div>
+        <div className="bg-black rounded-full p-2 text-white">L</div>
+      </div>
+    </div>
+
+    {/* Newsletter Block */}
+    <div className="bg-[#ffd600] rounded-xl p-6 flex flex-col justify-center">
+      <h3 className="text-xl font-semibold mb-4 text-black">Sign up for our newsletter</h3>
+      <div className="flex items-center bg-white rounded-full overflow-hidden w-full max-w-md">
+        <input
+          type="email"
+          placeholder="E-mail"
+          className="px-4 py-2 w-full text-base focus:outline-none"
+        />
+        <button className="bg-black text-white px-4 py-2 text-lg">
+          →
+        </button>
+      </div>
+      <p className="text-sm text-gray-800 mt-2">
+        Get product insights, tips, and exclusive offers delivered to your inbox.
       </p>
-    </motion.div>
-
-    {/* Carousel Container */}
-    <div className="relative overflow-hidden">
-      {/* Cards Container */}
-      <div className="flex transition-transform duration-500 ease-in-out" style={{ transform: `translateX(-${currentIndex * 100}%)` }}> {/* Increased duration for smoother animation */}
-        {services.map((service, index) => (
-          <motion.div
-            key={index}
-            className="w-full flex-shrink-0 px-4"
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={{ delay: 0.08 * index, duration: 0.4 }}
-          >
-            <div className={`p-6 rounded-2xl bg-white shadow-md h-full`}>
-              <div className="flex justify-start items-start mb-4"> {/* Align items to start */}
-                <div className={`text-2xl text-blue-500`}> {/* Removed theme-based icon color */}
-                  {service.icon}
-                </div>
-                {/* Removed the right arrow */}
-              </div>
-              <h3 className={`text-lg font-medium mb-2 text-gray-900`}> {/* Removed theme-based text color */}
-                {service.title}
-              </h3>
-              <p className={`text-gray-600 text-sm mb-6`}> {/* Removed theme-based text color */}
-                {service.description}
-              </p>
-              <div className={`text-2xl text-blue-500 absolute bottom-6 right-6`}> {/* Removed theme-based plus icon color */}
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Navigation Arrows - Placed below the carousel */}
-      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex space-x-4 mt-6">
-        {currentIndex > 0 && (
-          <button
-            onClick={() => setCurrentIndex(prev => Math.max(prev - 1, 0))}
-            className="bg-white rounded-full p-2 shadow-md text-gray-500"
-          >
-            <FiChevronLeft />
-          </button>
-        )}
-        {currentIndex < services.length - 1 && (
-          <button
-            onClick={() => setCurrentIndex(prev => Math.min(prev + 1, services.length - 1))}
-            className="bg-white rounded-full p-2 shadow-md text-gray-500"
-          >
-            <FiChevronRight />
-          </button>
-        )}
-      </div>
     </div>
   </div>
 </section>
-      {/* News Section */}
-      <section className={`py-20 px-6 overflow-hidden ${
+
+   {/* News Section */}
+   <section className={`py-20 px-6 overflow-hidden rounded-xl ${
         theme === 'dark' ? 'bg-gray-950' : 'bg-white'
       }`}>
         <div className="max-w-6xl mx-auto">
           <motion.div
-            className="flex justify-between items-end mb-12"
+            className="flex justify-between items-center mb-12"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
           >
             <div>
-              <h2 className="text-3xl md:text-4xl font-light mb-2">
+              <h2 className="text-4xl md:text-5xl font-light mb-2">
                 <span className={`text-transparent bg-clip-text bg-gradient-to-r ${
                   theme === 'dark' ? 'from-cyan-400 to-blue-500' : 'from-blue-500 to-blue-700'
                 }`}>Latest</span> Insights
@@ -731,7 +774,10 @@ const Home = () => {
           <div className="relative w-full overflow-hidden" ref={newsContainerRef}>
             <div className="flex gap-8 w-max">
               {memoizedNewsData.map((item, index) => (
-                <NewsItem key={index} item={item} />
+                // Added p-6 for padding inside the tile container
+                <div key={`news-item-wrapper-${index}`} className="bg-[#EDEEEE] rounded-xl p-6">
+                  <NewsItem item={item} />
+                </div>
               ))}
             </div>
           </div>
