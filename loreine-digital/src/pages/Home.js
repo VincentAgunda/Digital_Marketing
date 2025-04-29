@@ -234,10 +234,16 @@ const Home = () => {
     }
   ]);
 
+  // Newsletter state
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [newsletterMessage, setNewsletterMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   // Refs
   const formRef = useRef();
   const newsContainerRef = useRef();
   const animationFrameRef = useRef();
+  const newsletterFormRef = useRef();
 
   // Memoized data
   const memoizedPortfolioItems = useMemo(() => PORTFOLIO_ITEMS, []);
@@ -270,6 +276,28 @@ const Home = () => {
       setFormData({ name: "", email: "", project: "", budget: "" });
     } catch (error) {
       setMessage("Failed to send. Please try again or contact us directly.");
+    }
+  }, []);
+
+  // Newsletter submission
+  const handleNewsletterSubmit = useCallback(async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setNewsletterMessage("Subscribing...");
+
+    try {
+      await emailjs.sendForm(
+        process.env.REACT_APP_EMAILJS_SERVICE_ID,
+        process.env.REACT_APP_EMAILJS_TEMPLATE_ID,
+        newsletterFormRef.current,
+        process.env.REACT_APP_EMAILJS_PUBLIC_KEY
+      );
+      setNewsletterMessage("Thank you for subscribing! You'll receive our next update.");
+      setNewsletterEmail("");
+    } catch (error) {
+      setNewsletterMessage("Failed to subscribe. Please try again later.");
+    } finally {
+      setIsSubmitting(false);
     }
   }, []);
 
@@ -384,15 +412,15 @@ const Home = () => {
         />
       </div>
       <div className="p-4">
-        <h3 className={`text-base font-medium mb-1 ${
+        <h3 className={`text-lg font-medium mb-1 ${
           theme === 'dark' ? 'text-white' : 'text-gray-900'
         }`}>{item.title}</h3>
         <p className={`${
           theme === 'dark' ? 'text-cyan-400' : 'text-blue-500'
-        } text-2xs mb-1.5`}>{item.category}</p>
+        } text-sm mb-1.5`}>{item.category}</p>
         <p className={`${
           theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-        } text-2xs`}>{item.excerpt}</p>
+        } text-sm`}>{item.excerpt}</p>
       </div>
     </motion.div>
   ), [theme]);
@@ -409,7 +437,7 @@ const Home = () => {
       </div>
       <p className={`${
         theme === 'dark' ? 'text-gray-500' : 'text-gray-600'
-      } text-sm mb-2`}>{item.date}</p>
+      } text-base mb-2`}>{item.date}</p>
       <h3 className={`text-xl font-medium mb-2 group-hover:${
         theme === 'dark' ? 'text-cyan-400' : 'text-blue-600'
       } transition-colors ${
@@ -419,10 +447,10 @@ const Home = () => {
       </h3>
       <p className={`${
         theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-      } text-sm mb-3`}>{item.excerpt}</p>
+      } text-base mb-3`}>{item.excerpt}</p>
       <a href="#" className={`${
         theme === 'dark' ? 'text-cyan-400 hover:text-white' : 'text-blue-500 hover:text-blue-700'
-      } transition-colors text-sm`}>
+      } transition-colors text-base`}>
         Read More →
       </a>
     </div>
@@ -442,7 +470,7 @@ const Home = () => {
         className="flex justify-between items-center w-full text-left py-4"
         onClick={() => onClick(index)}
       >
-        <h3 className={`text-lg font-medium ${
+        <h3 className={`text-xl font-medium ${
           theme === 'dark' ? 'text-white' : 'text-gray-900'
         }`}>{item.q}</h3>
         <div className={`transition-transform ${isActive ? 'rotate-180' : ''}`}>
@@ -460,7 +488,7 @@ const Home = () => {
           >
             <p className={`${
               theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-            } pb-4`}>{item.a}</p>
+            } pb-4 text-lg`}>{item.a}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -497,7 +525,7 @@ const Home = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7 }}
     >
-      <h1 className="text-4xl md:text-5xl font-semibold leading-tight mb-5">
+      <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold leading-tight mb-5">
         <span className={`text-transparent bg-clip-text bg-gradient-to-r ${
           theme === 'dark' ? 'from-[#42A5F5] to-[#E91E63]' : 'from-[#007AFF] to-[#005ECB]'
         } font-medium tracking-tight`}>Nexture Digital</span><br />
@@ -505,7 +533,7 @@ const Home = () => {
       </h1>
       <p className={`${
         theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-      } text-base md:text-lg max-w-md mb-6`}>
+      } text-lg md:text-xl max-w-md mb-6`}>
         We blend AI, neural UX, and modern tech into sleek adaptive interfaces.
       </p>
       <div className="flex flex-wrap gap-4">
@@ -513,9 +541,9 @@ const Home = () => {
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
           onClick={() => setShowModal(true)}
-          className={`px-5 py-2.5 ${
+          className={`px-6 py-3 ${
             theme === 'dark' ? 'bg-[#42A5F5] hover:bg-[#64B5F6]' : 'bg-[#007AFF] hover:bg-[#005ECB]'
-          } rounded-lg text-sm font-medium shadow-md transition text-white`}
+          } rounded-lg text-base font-medium shadow-md transition text-white`}
         >
           Book a strategic Call
         </motion.button>
@@ -523,9 +551,9 @@ const Home = () => {
           href="#work"
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
-          className={`px-5 py-2.5 border ${
+          className={`px-6 py-3 border ${
             theme === 'dark' ? 'border-gray-600 hover:border-[#E91E63]' : 'border-gray-300 hover:border-[#007AFF]'
-          } rounded-lg text-sm font-medium transition ${
+          } rounded-lg text-base font-medium transition ${
             theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
           }`}
         >
@@ -547,12 +575,12 @@ const Home = () => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
     >
-      <h2 className={`text-2xl md:text-3xl font-light mb-2 ${theme === 'dark' ? 'text-white' : 'text-[#5a7894]'}`}>
+      <h2 className={`text-3xl md:text-4xl font-light mb-2 ${theme === 'dark' ? 'text-white' : 'text-[#5a7894]'}`}>
         Selected Works
       </h2>
       <p className={`${
         theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-      } max-w-lg mx-auto text-sm md:text-base`}>
+      } max-w-lg mx-auto text-lg md:text-xl`}>
         Explore our groundbreaking projects that redefine digital interaction paradigms.
       </p>
     </motion.div>
@@ -584,13 +612,13 @@ const Home = () => {
                 />
               </div>
               {/* Card content with dark text colors and adjusted font sizes */}
-              <h3 className={`text-lg md:text-xl font-medium mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              <h3 className={`text-xl md:text-2xl font-medium mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 {item.title}
               </h3>
-              <p className={`${theme === 'dark' ? 'text-cyan-400' : 'text-gray-700'} text-sm mb-3`}> {/* Dark gray category text */}
+              <p className={`${theme === 'dark' ? 'text-cyan-400' : 'text-gray-700'} text-base mb-3`}> {/* Dark gray category text */}
                 {item.category}
               </p>
-              <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-700'} text-sm md:text-base mb-6`}> {/* Dark gray description text */}
+              <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-700'} text-base md:text-lg mb-6`}> {/* Dark gray description text */}
                 {item.excerpt}
               </p>
               {/* Arrow icon within card - Dark gray color */}
@@ -728,19 +756,42 @@ const Home = () => {
     {/* Newsletter Block */}
     <div className="bg-[#EDEEEE] rounded-xl p-6 flex flex-col justify-center">
       <h3 className="text-xl font-semibold mb-4 text-black">Sign up for our newsletter</h3>
-      <div className="flex items-center bg-white rounded-full overflow-hidden w-full max-w-md">
-        <input
-          type="email"
-          placeholder="E-mail"
-          className="px-4 py-2 w-full text-base focus:outline-none"
-        />
-        <button className="bg-black text-white px-4 py-2 text-lg">
-          →
-        </button>
-      </div>
-      <p className="text-sm text-gray-800 mt-2">
-        Get product insights, tips, and exclusive offers delivered to your inbox.
-      </p>
+      <form 
+        ref={newsletterFormRef}
+        onSubmit={handleNewsletterSubmit}
+        className="space-y-2"
+      >
+        <div className="flex items-center bg-white rounded-full overflow-hidden w-full max-w-md">
+          <input
+            type="email"
+            name="email"
+            value={newsletterEmail}
+            onChange={(e) => setNewsletterEmail(e.target.value)}
+            placeholder="E-mail"
+            className="px-4 py-2 w-full text-base focus:outline-none"
+            required
+          />
+          <button 
+            type="submit" 
+            className="bg-black text-white px-4 py-2 text-lg"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? '...' : '→'}
+          </button>
+        </div>
+        {newsletterMessage && (
+          <p className={`text-sm ${
+            newsletterMessage.includes("Thank you") 
+              ? "text-green-600" 
+              : "text-red-600"
+          }`}>
+            {newsletterMessage}
+          </p>
+        )}
+        <p className="text-sm text-gray-800">
+          Get product insights, tips, and exclusive offers delivered to your inbox.
+        </p>
+      </form>
     </div>
   </div>
 </section>

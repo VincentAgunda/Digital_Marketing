@@ -42,20 +42,20 @@ const services = [
   },
 ];
 
-// Text fade-in variant
+// Text fade-in variant - Adjusted for subtlety
 const fadeInUp = {
-  hidden: { opacity: 0, y: 50 },
+  hidden: { opacity: 0, y: 30 }, // Slightly less initial movement
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.8, ease: "easeOut" },
+    transition: { duration: 1.2, ease: "easeOut" }, // Increased duration for smoothness
   },
 };
 
 // Service card
 const ServiceSection = ({ service, index, darkMode }) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "0px 0px -50px 0px" });
+  const isInView = useInView(ref, { once: true, margin: "0px 0px -100px 0px" }); // Adjusted margin
 
   return (
     <motion.div
@@ -67,15 +67,16 @@ const ServiceSection = ({ service, index, darkMode }) => {
         darkMode ? service.bgDark : service.bgLight
       } rounded-[50px] flex flex-col-reverse md:flex-row items-center justify-between px-6 md:px-12 py-16 md:py-20 transition-all duration-500`}
     >
-      {/* Bubbly Animated Icon */}
+      {/* Bubbly Animated Icon - Adjusted for subtlety */}
       <motion.div
-        initial={{ scale: 0.6, opacity: 0 }}
+        initial={{ scale: 0.8, opacity: 0 }} // Slightly smaller initial scale
         animate={isInView ? { scale: 1, opacity: 1 } : {}}
         transition={{
           type: "spring",
-          stiffness: 200,
-          damping: 15,
-          delay: 0.1,
+          stiffness: 100, // Reduced stiffness
+          damping: 20, // Increased damping
+          delay: 0.2, // Slightly increased delay
+          duration: 1.5, // Added a duration for better control with spring
         }}
         className={`relative w-60 h-60 md:w-80 md:h-80 rounded-full ${
           darkMode ? service.imgBgDark : service.imgBgLight
@@ -112,7 +113,7 @@ const ServiceSection = ({ service, index, darkMode }) => {
 
 // Main component
 const ServicesPage = () => {
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(false); // Changed default to false for light mode
 
   return (
     <section className={`${darkMode ? "bg-black" : "bg-white"} min-h-screen transition-colors duration-500`}>
@@ -121,7 +122,7 @@ const ServicesPage = () => {
         <div className="flex justify-end mb-6">
           <button
             onClick={() => setDarkMode((prev) => !prev)}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-full text-sm transition-all"
+            className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-full text-sm transition-all"
           >
             {darkMode ? <FaSun /> : <FaMoon />}
             {darkMode ? "Light Mode" : "Dark Mode"}
@@ -132,7 +133,7 @@ const ServicesPage = () => {
         <motion.h2
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.8 }} // Title animation can remain quicker
           className={`text-4xl md:text-5xl font-medium text-center mb-24 tracking-tight ${
             darkMode ? "text-white" : "text-gray-900"
           }`}
