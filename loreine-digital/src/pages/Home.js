@@ -868,157 +868,156 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Contact Modal */}
       <AnimatePresence>
-        {showModal && (
-          <motion.div
-            className="fixed inset-0 flex items-center justify-center p-4 z-50"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+  {showModal && (
+    <motion.div
+      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      {/* Overlay */}
+      <div
+        className={`absolute inset-0 backdrop-blur-sm ${
+          theme === 'dark' ? 'bg-black/80' : 'bg-black/40'
+        }`}
+        onClick={() => setShowModal(false)}
+      />
+
+      {/* Modal */}
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        transition={{ type: 'spring', damping: 20 }}
+        className={`relative w-full max-w-sm sm:max-w-md rounded-xl border shadow-xl p-4 sm:p-6 overflow-hidden max-h-[90vh] ${
+          theme === 'dark' ? 'bg-gray-900 border-gray-800 text-white' : 'bg-white border-gray-200 text-gray-900'
+        }`}
+      >
+        {/* Close Button */}
+        <button
+          className={`absolute top-3 right-3 text-sm ${
+            theme === 'dark' ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'
+          }`}
+          onClick={() => setShowModal(false)}
+        >
+          <svg width="20" height="20" fill="none" stroke="currentColor">
+            <path d="M18 6L6 18M6 6l12 12" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+        </button>
+
+        {/* Header */}
+        <h3 className="text-xl sm:text-2xl font-light mb-3 sm:mb-4">
+          <span
+            className={`text-transparent bg-clip-text bg-gradient-to-r ${
+              theme === 'dark' ? 'from-cyan-400 to-blue-500' : 'from-blue-500 to-blue-700'
+            }`}
           >
-            <div
-              className={`absolute inset-0 ${
-                theme === 'dark' ? 'bg-black/80' : 'bg-black/40'
-              } backdrop-blur-sm`}
-              onClick={() => setShowModal(false)}
-            ></div>
+            Start
+          </span>{' '}
+          Your Project
+        </h3>
 
-            <motion.div
-              className={`relative rounded-xl border shadow-2xl w-full max-w-md p-6 ${
-                theme === 'dark' ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'
-              }`}
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ type: "spring", damping: 25 }}
-            >
-              <button
-                className={`absolute top-4 right-4 ${
-                  theme === 'dark' ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'
+        {/* Form (scrollable) */}
+        <form
+          ref={formRef}
+          onSubmit={sendEmail}
+          className="space-y-3 overflow-y-auto max-h-[60vh] pr-1"
+        >
+          {[
+            { label: 'Your Name', name: 'name', type: 'text' },
+            { label: 'Email Address', name: 'email', type: 'email' },
+          ].map(({ label, name, type }) => (
+            <div key={name}>
+              <label className="block text-sm mb-1">{label}</label>
+              <input
+                type={type}
+                name={name}
+                value={formData[name]}
+                onChange={handleFormChange}
+                required
+                className={`w-full px-3 py-2 rounded-lg border text-sm focus:ring-1 outline-none ${
+                  theme === 'dark'
+                    ? 'bg-gray-800 border-gray-700 text-white focus:border-cyan-400 focus:ring-cyan-400/30'
+                    : 'bg-white border-gray-300 text-gray-900 focus:border-cyan-400 focus:ring-cyan-400/30'
                 }`}
-                onClick={() => setShowModal(false)}
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path d="M18 6L6 18M6 6l12 12" strokeWidth="2" strokeLinecap="round"/>
-                </svg>
-              </button>
+              />
+            </div>
+          ))}
 
-              <h3 className={`text-2xl font-light mb-6 ${
-                theme === 'dark' ? 'text-white' : 'text-gray-900'
-              }`}>
-                <span className={`text-transparent bg-clip-text bg-gradient-to-r ${
-                  theme === 'dark' ? 'from-cyan-400 to-blue-500' : 'from-blue-500 to-blue-700'
-                }`}>Start</span> Your Project
-              </h3>
+          <div>
+            <label className="block text-sm mb-1">Project Details</label>
+            <textarea
+              name="project"
+              value={formData.project}
+              onChange={handleFormChange}
+              rows="3"
+              required
+              className={`w-full px-3 py-2 rounded-lg border text-sm resize-none focus:ring-1 outline-none ${
+                theme === 'dark'
+                  ? 'bg-gray-800 border-gray-700 text-white focus:border-cyan-400 focus:ring-cyan-400/30'
+                  : 'bg-white border-gray-300 text-gray-900 focus:border-cyan-400 focus:ring-cyan-400/30'
+              }`}
+            />
+          </div>
 
-              <form ref={formRef} onSubmit={sendEmail} className="space-y-4">
-                <div>
-                  <label className={`block text-sm ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  } mb-1`}>Your Name</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleFormChange}
-                    className={`w-full ${
-                      theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'
-                    } border rounded-lg px-4 py-3 ${
-                      theme === 'dark' ? 'text-white' : 'text-gray-900'
-                    } focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 outline-none transition`}
-                    required
-                  />
-                </div>
+          <div>
+            <label className="block text-sm mb-1">Budget Range</label>
+            <select
+              name="budget"
+              value={formData.budget}
+              onChange={handleFormChange}
+              required
+              className={`w-full px-3 py-2 rounded-lg border text-sm appearance-none focus:ring-1 outline-none ${
+                theme === 'dark'
+                  ? 'bg-gray-800 border-gray-700 text-white focus:border-cyan-400 focus:ring-cyan-400/30'
+                  : 'bg-white border-gray-300 text-gray-900 focus:border-cyan-400 focus:ring-cyan-400/30'
+              }`}
+            >
+              <option value="">Select an option</option>
+              <option value="5k-15k">5K - 15K</option>
+              <option value="15k-50k">15K - 50K</option>
+              <option value="50k+">50K+</option>
+            </select>
+          </div>
 
-                <div>
-                  <label className={`block text-sm ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  } mb-1`}>Email Address</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleFormChange}
-                    className={`w-full ${
-                      theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'
-                    } border rounded-lg px-4 py-3 ${
-                      theme === 'dark' ? 'text-white' : 'text-gray-900'
-                    } focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 outline-none transition`}
-                    required
-                  />
-                </div>
+          {message && (
+            <div
+              className={`text-sm py-2 px-3 rounded-lg ${
+                message.includes('sent')
+                  ? theme === 'dark'
+                    ? 'bg-green-900/50 text-green-400'
+                    : 'bg-green-100 text-green-800'
+                  : message.includes('Sending')
+                  ? theme === 'dark'
+                    ? 'bg-blue-900/50 text-blue-400'
+                    : 'bg-blue-100 text-blue-800'
+                  : theme === 'dark'
+                  ? 'bg-red-900/50 text-red-400'
+                  : 'bg-red-100 text-red-800'
+              }`}
+            >
+              {message}
+            </div>
+          )}
 
-                <div>
-                  <label className={`block text-sm ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  } mb-1`}>Project Details</label>
-                  <textarea
-                    name="project"
-                    value={formData.project}
-                    onChange={handleFormChange}
-                    rows="3"
-                    className={`w-full ${
-                      theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'
-                    } border rounded-lg px-4 py-3 ${
-                      theme === 'dark' ? 'text-white' : 'text-gray-900'
-                    } focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 outline-none transition`}
-                    required
-                  ></textarea>
-                </div>
+          <button
+            type="submit"
+            disabled={message === 'Sending...'}
+            className={`w-full py-2 text-sm rounded-lg font-medium text-white bg-gradient-to-r transition-all ${
+              theme === 'dark'
+                ? 'from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500'
+                : 'from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600'
+            } disabled:opacity-50`}
+          >
+            {message === 'Sending...' ? 'Sending...' : 'Submit Inquiry'}
+          </button>
+        </form>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
 
-                <div>
-                  <label className={`block text-sm ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  } mb-1`}>Budget Range</label>
-                  <select
-                    name="budget"
-                    value={formData.budget}
-                    onChange={handleFormChange}
-                    className={`w-full ${
-                      theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'
-                    } border rounded-lg px-4 py-3 ${
-                      theme === 'dark' ? 'text-white' : 'text-gray-900'
-                    } focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 outline-none appearance-none`}
-                    required
-                  >
-                    <option value="">Select an option</option>
-                    <option value="5k-15k">5K - 15K</option>
-                    <option value="15k-50k">15K - 50K</option>
-                    <option value="50k+">50K+</option>
-                  </select>
-                </div>
-
-                {message && (
-                  <div className={`text-sm py-2 px-3 rounded-lg ${
-                    message.includes("sent") ? (
-                      theme === 'dark' ? 'bg-green-900/50 text-green-400' : 'bg-green-100 text-green-800'
-                    ) : message.includes("Sending") ? (
-                      theme === 'dark' ? 'bg-blue-900/50 text-blue-400' : 'bg-blue-100 text-blue-800'
-                    ) : (
-                      theme === 'dark' ? 'bg-red-900/50 text-red-400' : 'bg-red-100 text-red-800'
-                    )
-                  }`}>
-                    {message}
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  className={`w-full bg-gradient-to-r ${
-                    theme === 'dark' ? 'from-cyan-600 to-blue-600' : 'from-blue-600 to-blue-700'
-                  } text-white py-3 px-6 rounded-lg font-medium hover:${
-                    theme === 'dark' ? 'from-cyan-500 to-blue-500' : 'from-blue-500 to-blue-600'
-                  } transition-all disabled:opacity-50`}
-                  disabled={message === "Sending..."}
-                >
-                  {message === "Sending..." ? "Sending..." : "Submit Inquiry"}
-                </button>
-              </form>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       <ThemeToggle />
     </motion.div>
