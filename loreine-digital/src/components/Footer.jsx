@@ -83,11 +83,11 @@ function Footer() {
             <div className="space-y-1.5">
               <p className="text-gray-500 text-xs flex items-center hover:text-gray-300 transition-colors duration-200">
                 <FaPhone className="mr-1.5 text-xs" />
-                +254 (746)-968-441
+                +254 (792)-823-182
               </p>
               <p className="text-gray-500 text-xs flex items-center hover:text-gray-300 transition-colors duration-200">
                 <FaEnvelope className="mr-1.5 text-xs" />
-                info@loreinedigital.com
+                info@nexturedigital.com
               </p>
             </div>
           </div>
@@ -145,7 +145,7 @@ function Footer() {
 
         {/* Copyright Section */}
         <div className="mt-6 pt-4 border-t border-gray-700 text-center text-gray-500 text-2xs">
-          &copy; {new Date().getFullYear()} LoreineDigital. All rights reserved.
+          &copy; {new Date().getFullYear()} Nexture-Digital. All rights reserved.
         </div>
       </div>
     </footer>
